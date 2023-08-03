@@ -5,15 +5,16 @@ import { FeedInput } from './Feed'
 
 
 import Navbar from './Navbar'
+import CheckSignin from './CheckSignin'
 
 
 function FeedWrite() {
     return (
-        <div>
+        <CheckSignin>
             <Navbar></Navbar>
 
             <FeedInput></FeedInput>
-        </div>
+        </CheckSignin>
 
     );
 

@@ -9,6 +9,8 @@ import axios from "axios"
 import Cookies from 'js-cookie'
 import Navbar from './Navbar'
 import EditIcon from '@mui/icons-material/Edit';
+import ToggleDarkmode from "./ToggleDarkmode";
+import CheckSignin from './CheckSignin'
 
 
 function Profile() {
@@ -29,33 +31,50 @@ function Profile() {
 
 
     return (
-        <Grid container spacing={3}>
-            <Grid item xs md>
+        <CheckSignin>
+            <Grid container spacing={3}>
+                <Grid item xs md>
+                </Grid>
+                <Grid item xs={10} md={6} sx={{ marginTop: "6rem" }}>
+                    <Navbar>
+                        <Link to={'/profile'}>
+                            <Button variant="text" disableElevation>프로필</Button>
+                        </Link>
+
+                    </Navbar>
+
+                    <ProfileDisplayName></ProfileDisplayName>
+
+
+                    <Box sx={{ marginTop: '2rem' }}>
+                        <b>앱 설정</b>
+
+                        <hr />
+
+                        <b>다크모드: <ToggleDarkmode></ToggleDarkmode></b>
+
+                        <br />
+
+                        <Button onClick={handleClickLogout}>로그아웃</Button>
+
+                    </Box>
+
+                    <Box sx={{ marginTop: '2rem'}}>
+                        <b>회원 설정</b>
+                        <hr />
+
+                        <Button sx={{ color: "#d12828" }} onClick={handleWithdrawal}>회원탈퇴</Button>
+
+                    </Box>
+
+
+
+                </Grid>
+                <Grid item xs md>
+                </Grid>
             </Grid>
-            <Grid item xs={10} md={6} sx={{ marginTop: "6rem" }}>
-                <Navbar>
-                    <Button onClick={handleClickLogout}>로그아웃</Button>
-                    <Link to={'/profile'}>
-                        <Button variant="text" disableElevation>프로필</Button>
-                    </Link>
+        </CheckSignin>
 
-                </Navbar>
-
-                <ProfileDisplayName></ProfileDisplayName>
-
-
-                <br />
-                <b>회원 설정</b>
-                <hr />
-
-                <br />
-
-                <Button sx={{ color: "#d12828" }} onClick={handleWithdrawal}>회원탈퇴</Button>
-
-            </Grid>
-            <Grid item xs md>
-            </Grid>
-        </Grid>
     );
 
 }
