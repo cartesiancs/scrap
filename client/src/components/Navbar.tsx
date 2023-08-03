@@ -12,7 +12,7 @@ function Navbar(props) {
     const dispatch = useDispatch();
 
     const isDarkmode = useSelector((state: any) => state.app.isDarkmode);
-    const colorMode = isDarkmode == false ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'
+    const colorMode = isDarkmode == false ? 'rgba(255,255,255,0.7)' : 'rgba(18, 18, 18,0.7)'
 
     const toggleColorMode = () => {
         dispatch(toggleDarkmode({
@@ -27,7 +27,7 @@ function Navbar(props) {
 
     return (
         <Box sx={{ flexGrow: 1, width: '100%' }} >
-          <AppBar position="fixed" sx={{ backdropFilter: "blur(8px)", backgroundColor: colorMode, boxShadow: "none" }}>
+          <AppBar position="fixed" sx={{ backdropFilter: "blur(8px)", backgroundColor: colorMode, boxShadow: "none", backgroundImage: "none" }}>
             <Toolbar>
               <Typography component="div" color="text.primary" onClick={handleTitleClick} sx={{ flexGrow: 1, fontSize: "1rem" }}>
                 <Link to={'/'}>
