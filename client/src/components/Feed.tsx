@@ -76,7 +76,6 @@ function Feed() {
         return (
             <Grid container sx={{ marginTop: "1rem" }} justifyContent="center" spacing={3}>
                 <Grid item xs={12} md={6}>
-                    <FeedInput></FeedInput>
 
                     {feeds.map(feed => (
                         <FeedBody feed={feed}></FeedBody>
@@ -377,4 +376,4 @@ function FeedSkeleton() {
 }
   
 export default Feed;
-export { FeedBody }
+export { FeedBody, FeedInput }

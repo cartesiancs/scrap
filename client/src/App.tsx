@@ -17,6 +17,7 @@ import MyProfilePage from './pages/MyProfile'
 import ProfilePage from './pages/UserProfile'
 
 import ContentPage from './pages/Content'
+import FeedWritePage from './pages/Write'
 
 import './App.css'
 
@@ -42,6 +43,8 @@ const App = () => {
                         <Switch>
                             <Route exact path="/" component={RootPage} />
                             <Route path="/profile" component={MyProfilePage} />
+                            <Route path="/write" component={FeedWritePage} />
+                            
 
                             <Route path="/feed/*" component={ContentPage} />
                             <Route path="/user/*" component={ProfilePage} />
