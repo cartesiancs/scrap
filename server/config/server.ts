@@ -1,10 +1,10 @@
 export default 
 {
     "development" : {
-        "uri": "http://localhost:9030"
+        "uri": "http://localhost:9031"
     },
     "production" : {
-        "uri": "https://board.devent.kr"
+        "uri": "https://scrap.devent.kr"
     }
 
 }

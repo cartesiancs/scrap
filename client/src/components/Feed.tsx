@@ -55,7 +55,9 @@ function Feed() {
     
                     dispatch(push({
                         idx: element.idx, 
-                        content: element.content, 
+                        thought: element.thought,
+                        quotationText: element.quotationText,
+                        quotationOrigin: element.quotationOrigin,
                         owner: element.owner, 
                         date: element.date, 
                         type: element.type, 
@@ -104,28 +106,45 @@ function Feed() {
 function FeedInput(props) {
     const dispatch = useDispatch();
 
-    const userId = useSelector((state: any) => state.auth.userId);
-    const feeds = useSelector((state: any) => state.feed.feeds);
+    const [inputs, setInputs] = useState({
+        thought: '',
+        quotationText: '',
+        quotationOrigin: ''
+    })
 
-    const [input, setInput] = useState('')
+    const { thought, quotationText, quotationOrigin } = inputs
+
     const [alertTrigger, setAlertTrigger] = useState(0)
 
     const handleChange = (e) => {
-        setInput(e.target.value)
+        const { value, name } = e.target;
+        setInputs({
+          ...inputs,
+          [name]: value
+        });
     }
 
     const handleClick = () => {
-        if (input.length > 1000) {
+        if (inputs.thought.length > 1000) {
             setAlertTrigger(alertTrigger + 1)
             return 0
         }
 
-        if (input.length == 0) {
+        if (inputs.quotationText.length == 0) {
             return 0
         }
     
-        FeedAPI.insertFeed(input)
-        setInput('')
+        FeedAPI.insertFeed({
+            thought: thought,
+            quotationText: quotationText,
+            quotationOrigin: quotationOrigin
+        })
+        
+        setInputs({
+            thought: '',
+            quotationText: '',
+            quotationOrigin: ''
+        })
 
         setTimeout(() => {
             patchFeed()
@@ -141,7 +160,9 @@ function FeedInput(props) {
 
         dispatch(unshift({
             idx: getFeeds.data.result[0].idx, 
-            content: getFeeds.data.result[0].content, 
+            thought: getFeeds.data.result[0].thought, 
+            quotationText: getFeeds.data.result[0].quotationText, 
+            quotationOrigin: getFeeds.data.result[0].quotationOrigin, 
             owner: getFeeds.data.result[0].owner, 
             date: getFeeds.data.result[0].date, 
             type: getFeeds.data.result[0].type 
@@ -151,15 +172,38 @@ function FeedInput(props) {
 
     return (
         <Stack sx={{ marginTop: "1rem", marginBottom: "2rem" }} spacing={1}>
+
             <TextField
                 id="outlined-textarea"
-                label="Feed"
-                placeholder="input text..." 
+                label="quotationText"
+                name="quotationText"
+                placeholder="input quotationText..." 
                 onChange={handleChange} 
-                value={input}
+                value={quotationText}
                 multiline
             />
-            <Typography sx={{ fontSize: "0.8rem", textAlign: 'right', color: input.length < 990 ? "text.primary" : "#fc4242"  }}>{input.length}/1000</Typography>
+            <Typography sx={{ fontSize: "0.8rem", textAlign: 'right', color: inputs.quotationText.length < 990 ? "text.primary" : "#fc4242"  }}>{inputs.quotationText.length}/1000</Typography>
+
+            <TextField
+                id="outlined-textarea"
+                label="quotationOrigin"
+                name="quotationOrigin"
+                placeholder="input quotationOrigin..." 
+                onChange={handleChange} 
+                value={quotationOrigin}
+                multiline
+            />
+
+
+            <TextField
+                id="outlined-textarea"
+                label="thought"
+                name="thought"
+                placeholder="input thought..." 
+                onChange={handleChange} 
+                value={thought}
+                multiline
+            />
             <Button variant="contained" onClick={handleClick} disableElevation><SendIcon /> </Button>
             <Popup trigger={alertTrigger} message="길이가 너무 길어요" severity="info"></Popup>
 
@@ -169,6 +213,8 @@ function FeedInput(props) {
 
 
 function FeedBody({ feed }) {
+    const isDarkmode = useSelector((state: any) => state.app.isDarkmode);
+
     if (feed.type == 0) {
         return (
             <></>
@@ -176,15 +222,22 @@ function FeedBody({ feed }) {
     }
 
     return (
-        <Card variant="outlined" sx={{ marginBottom: '1rem' }}>
-            <CardContent>
+        <Box sx={{ marginBottom: '2rem', padding: '0rem', backgroundColor: isDarkmode? '#1d1e1f' : '#ebebed', borderRadius: '0.3rem' }}>
+            <Box sx={{ paddingTop: '1rem', paddingLeft: '1rem', paddingRight: '1rem' }}>
                 <FeedProfile feed={feed}></FeedProfile>
 
-                <Box sx={{ fontSize: 14, whiteSpace: 'pre-line', wordWrap: 'break-word' }} color="text.secondary">
-                    {feed.content}
-                </Box>
-            </CardContent>
-        </Card>
+            </Box>
+
+            <Box sx={{ fontSize: 18, whiteSpace: 'pre-line', wordWrap: 'break-word', padding: '1rem', backgroundColor: isDarkmode? '#18181a' : '#dedee3'  }} color="text.secondary">
+                {feed.quotationText}
+                <br /> 
+                _{feed.quotationOrigin}
+            </Box>
+
+            <Box sx={{ fontSize: 14, padding: '1rem', whiteSpace: 'pre-line', wordWrap: 'break-word' }} color="text.secondary">
+                {feed.thought}
+            </Box>
+        </Box>
     )
 }
 

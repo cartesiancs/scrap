@@ -53,16 +53,19 @@ const feedController = {
     
         let getUserId = await userService.transformTokentoUserid({ token: token });
 
-        let content = sanitizeHtml(req.body.content);
+        let thought = sanitizeHtml(req.body.thought);
+        let quotationText = sanitizeHtml(req.body.quotationText);
+        let quotationOrigin = sanitizeHtml(req.body.quotationOrigin);
+
         let owner = getUserId.userId
         let date = now.format("YYYY.MM.DD.HH.mm.ss"); 
         let type = 1;
     
-        if (req.body.content.length > 1000) {
+        if (req.body.thought > 1000 || req.body.quotationText > 1000) {
             return res.status(401).json({status:0})
         }
 
-        let data: any = await feedModel.insert({ content: content, owner: owner, date: date, type: type })
+        let data: any = await feedModel.insert({ thought: thought, quotationText: quotationText, quotationOrigin: quotationOrigin, owner: owner, date: date, type: type })
     
         if (data.status == 1) {
             res.status(200).json({status:1})
@@ -94,11 +97,11 @@ const feedController = {
         let token = req.headers['x-access-token'];
     
         let idxFeed = Number(req.params.idx);
-        let contentFeed = req.body.content;
+        let thought = sanitizeHtml(req.body.content);
         let getUserId = await userService.transformTokentoUserid({ token: token });
         let owner = getUserId.userId
         
-        let data: any = await feedModel.update({ idxFeed, contentFeed, owner })
+        let data: any = await feedModel.update({ idxFeed, thought, owner })
     
         if (data.status == 1) {
             res.status(200).json({status:1})

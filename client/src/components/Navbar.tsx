@@ -31,7 +31,7 @@ function Navbar(props) {
             <Toolbar>
               <Typography component="div" color="text.primary" onClick={handleTitleClick} sx={{ flexGrow: 1, fontSize: "1rem" }}>
                 <Link to={'/'}>
-                    <b>Board</b>
+                    <b>Scrap</b>
 
                 </Link>
               </Typography>

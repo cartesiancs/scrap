@@ -67,7 +67,7 @@ const feedModel = {
         }
     },
 
-    insert: async function ({ content, owner, date, type }) {
+    insert: async function ({ thought, quotationText, quotationOrigin, owner, date, type }) {
         try {
             const feedRepository = AppDataSource.getRepository(Feed);
             const insertFeed = await feedRepository.createQueryBuilder()
@@ -75,7 +75,9 @@ const feedModel = {
                 .into(Feed)
                 .values([
                     { 
-                        content: content, 
+                        thought: thought, 
+                        quotationText: quotationText,
+                        quotationOrigin: quotationOrigin,
                         owner: owner, 
                         date: date, 
                         type: type 
@@ -106,12 +108,12 @@ const feedModel = {
         }
     },
     
-    update: async function ({ idxFeed, contentFeed, owner }) {
+    update: async function ({ idxFeed, thought, owner }) {
         try {
             const feedRepository = AppDataSource.getRepository(Feed);
             const updateFeed = await feedRepository.createQueryBuilder()
             .update(Feed)
-            .set({ content: contentFeed })
+            .set({ thought: thought })
             .where("idx = :idx AND owner = :owner", { idx: idxFeed, owner: owner })
             .execute()
 

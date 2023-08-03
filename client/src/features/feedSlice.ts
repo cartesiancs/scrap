@@ -3,7 +3,9 @@ import { createSlice } from '@reduxjs/toolkit'
 
 type FeedObject = {
     idx: number
-    content: string
+    thought: string,
+    quotationText: string,
+    quotationOrigin: string,
     owner: string
     date: string
     type: number
@@ -14,7 +16,7 @@ type state = {
 }
 
 const initialState: state = {
-    feeds: [{idx: 0, content:'', owner: '', date: '', type: 0}]
+    feeds: [{idx: 0, thought:'', quotationText:'', quotationOrigin:'', owner: '', date: '', type: 0}]
 }
 
 const feedSlice = createSlice({
