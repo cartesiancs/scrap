@@ -101,8 +101,11 @@ function Feed() {
 
 }
 
+type FeedInputPropsType = {
+    defaultQuotationText?: string
+}
 
-function FeedInput(props) {
+function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     const dispatch = useDispatch();
 
     const [inputs, setInputs] = useState({
@@ -168,6 +171,14 @@ function FeedInput(props) {
         }))
     }
     
+    useEffect(() => {
+        const insertQuotationText: string = defaultQuotationText || ''
+
+        setInputs({
+            ...inputs,
+            ['quotationText']: insertQuotationText
+          });
+    }, [defaultQuotationText])
 
     return (
         <Stack sx={{ marginTop: "1rem", marginBottom: "2rem" }} spacing={1}>
