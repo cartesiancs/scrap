@@ -212,12 +212,19 @@ function FeedInput(props) {
 
 
 function FeedBody({ feed }) {
+    const cutCriteria = 400
     const isDarkmode = useSelector((state: any) => state.app.isDarkmode);
+    const [isOverflow, setIsOverflow] = useState(feed.quotationText.length > cutCriteria ? true : false)
+    const typographyStyle = { fontSize: 18, whiteSpace: 'pre-line', wordWrap: 'break-word', padding: '1rem', backgroundColor: isDarkmode? '#18181a' : '#dedee3', fontFamily: 'Gowun Batang' }
 
     if (feed.type == 0) {
         return (
             <></>
         )
+    }
+
+    const handleClickMoreView = () => {
+        setIsOverflow(false)
     }
 
     return (
@@ -227,11 +234,22 @@ function FeedBody({ feed }) {
 
             </Box>
 
-            <Box sx={{ fontSize: 18, whiteSpace: 'pre-line', wordWrap: 'break-word', padding: '1rem', backgroundColor: isDarkmode? '#18181a' : '#dedee3', fontFamily: 'Gowun Batang' }} color="text.secondary">
-                {feed.quotationText}
-                <br /> 
-                _{feed.quotationOrigin}
-            </Box>
+            {isOverflow ? (
+                <Box sx={{...typographyStyle}} color="text.secondary">
+                    {feed.quotationText.substr(0, cutCriteria)} 
+                    <Typography onClick={handleClickMoreView}>(더보기)</Typography>
+                </Box>
+
+                ) : (
+                <Box sx={{...typographyStyle}} color="text.secondary">
+                    {feed.quotationText}
+                    <br /> 
+                    {feed.quotationOrigin}
+    
+                </Box>
+            )}
+
+
 
             <Box sx={{ fontSize: 14, padding: '1rem', whiteSpace: 'pre-line', wordWrap: 'break-word' }} color="text.secondary">
                 {feed.thought}
