@@ -10,7 +10,7 @@ import Navbar from './Navbar'
 
 
 function FeedContent() {
-    const [content, setContent] = useState([{idx: 0, content:'', owner: { userId: 'none', userDisplayName: 'none'}, date: '', type: 1}])
+    const [content, setContent] = useState([{idx: 0, thought:'', quotationText:'', quotationOrigin:'', owner: { userId: 'none', userDisplayName: 'none'}, date: '', type: 1}])
 
     const fetchFeed = async () => {
         const feedIdx = Number(location.pathname.split('/')[2])

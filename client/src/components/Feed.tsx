@@ -214,7 +214,7 @@ function FeedInput(props) {
 function FeedBody({ feed }) {
     const cutCriteria = 400
     const isDarkmode = useSelector((state: any) => state.app.isDarkmode);
-    const [isOverflow, setIsOverflow] = useState(feed.quotationText.length > cutCriteria ? true : false)
+    const [isOverflow, setIsOverflow] = useState(false)
     const typographyStyle = { fontSize: 18, whiteSpace: 'pre-line', wordWrap: 'break-word', padding: '1rem', backgroundColor: isDarkmode? '#18181a' : '#dedee3', fontFamily: 'Gowun Batang' }
 
     if (feed.type == 0) {
@@ -226,6 +226,12 @@ function FeedBody({ feed }) {
     const handleClickMoreView = () => {
         setIsOverflow(false)
     }
+
+    useEffect(() => {
+        if (feed.quotationText.length > 0) {
+            setIsOverflow(feed.quotationText.length > cutCriteria ? true : false)
+        } 
+    }, [])
 
     return (
         <Box sx={{ marginBottom: '2rem', padding: '0rem', backgroundColor: isDarkmode? '#1d1e1f' : '#ebebed', borderRadius: '0.3rem' }}>

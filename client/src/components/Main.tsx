@@ -21,7 +21,7 @@ function Main() {
         
             <Box sx={{ display: 'grid', marginBottom: "2rem", marginTop: "3rem" }}>
                 <Box sx={{ justifyContent: 'center', textAlign: 'center' }}>
-                    <h1>Scrap</h1>
+                    <h1>스크랩</h1>
                     <p>좋은 글귀를 발견하고 영감을 얻으세요. </p>
                 </Box>
 
@@ -60,6 +60,10 @@ function ButtonBox({ isLogin }) {
     if (isLogin) {
         return (
             <Box sx={{ justifyContent: 'center' }}>
+                <Link to={'/write'}>
+                    <Button variant="text" disableElevation>작성</Button>
+                </Link>
+
                 <Link to={'/profile'}>
                     <Button variant="text" disableElevation>프로필</Button>
                 </Link>

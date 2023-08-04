@@ -11,7 +11,7 @@ import Navbar from './Navbar'
 
 function Profile() {
     const [userProfileId, setUserId] = useState('')
-    const [content, setContent] = useState([{idx: 0, content:'', owner: { userId: '11', userDisplayName: '11'}, date: '', type: 1}])
+    const [content, setContent] = useState([{idx: 0, thought:'', quotationText:'', quotationOrigin:'', owner: { userId: '11', userDisplayName: '11'}, date: '', type: 1}])
 
 
     const getUserData = async () => {

@@ -37,6 +37,10 @@ function Profile() {
                 </Grid>
                 <Grid item xs={10} md={6} sx={{ marginTop: "6rem" }}>
                     <Navbar>
+                        <Link to={'/write'}>
+                            <Button variant="text" disableElevation>작성</Button>
+                        </Link>
+                        
                         <Link to={'/profile'}>
                             <Button variant="text" disableElevation>프로필</Button>
                         </Link>
