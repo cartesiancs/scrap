@@ -227,7 +227,7 @@ function FeedBody({ feed }) {
 
             </Box>
 
-            <Box sx={{ fontSize: 18, whiteSpace: 'pre-line', wordWrap: 'break-word', padding: '1rem', backgroundColor: isDarkmode? '#18181a' : '#dedee3'  }} color="text.secondary">
+            <Box sx={{ fontSize: 18, whiteSpace: 'pre-line', wordWrap: 'break-word', padding: '1rem', backgroundColor: isDarkmode? '#18181a' : '#dedee3', fontFamily: 'Gowun Batang' }} color="text.secondary">
                 {feed.quotationText}
                 <br /> 
                 _{feed.quotationOrigin}

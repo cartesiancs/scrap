@@ -33,26 +33,26 @@ function Navbar(props) {
       return (
         <AppBar position="fixed" color="primary" sx={{ paddingX: "1rem", top: 'auto', bottom: 0, ...blurBackground }}>
           <Toolbar>
-            <IconButton color="inherit" aria-label="open drawer">
+            <Button sx={{ padding: '1rem'}} color="inherit" aria-label="open drawer">
               <Link to={'/'}>
-                <FeedIcon sx={{ fontSize: '1.1rem', color: itemColor }} />
+                <FeedIcon sx={{ fontSize: '1.2rem', color: itemColor, position: 'relative', top: '0.2rem' }} />
               </Link>
-            </IconButton>
+            </Button>
             <Box sx={{ flexGrow: 1 }} />
 
-            <IconButton color="inherit">
+            <Button sx={{ padding: '1rem'}} color="inherit">
               <Link to={'/write'}>
-                <CreateIcon sx={{ fontSize: '1.1rem', color: itemColor }} />
+                <CreateIcon sx={{ fontSize: '1.2rem', color: itemColor, position: 'relative', top: '0.2rem' }} />
               </Link>
-            </IconButton>
+            </Button>
             <Box sx={{ flexGrow: 1 }} />
 
 
-            <IconButton color="inherit">
+            <Button sx={{ padding: '1rem'}} color="inherit">
               <Link to={'/profile'}>
-                <PersonIcon sx={{ fontSize: '1.1rem', color: itemColor }} />
+                <PersonIcon sx={{ fontSize: '1.2rem', color: itemColor, position: 'relative', top: '0.2rem' }} />
               </Link>
-            </IconButton>
+            </Button>
           </Toolbar>
         </AppBar>
       )
