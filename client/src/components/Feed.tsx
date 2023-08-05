@@ -226,7 +226,8 @@ function FeedBody({ feed }) {
     const cutCriteria = 400
     const isDarkmode = useSelector((state: any) => state.app.isDarkmode);
     const [isOverflow, setIsOverflow] = useState(false)
-    const typographyStyle = { fontSize: 18, whiteSpace: 'pre-line', wordWrap: 'break-word', padding: '1rem', backgroundColor: isDarkmode? '#18181a' : '#dedee3', fontFamily: 'Gowun Batang' }
+    const typographyStyle = { fontSize: 18, whiteSpace: 'pre-line', wordWrap: 'break-word', padding: '1rem', backgroundColor: isDarkmode? '#18181a' : '#f5f5f7', fontFamily: 'Gowun Batang' }
+    
 
     if (feed.type == 0) {
         return (

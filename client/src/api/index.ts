@@ -180,4 +180,20 @@ const OauthAPI = {
     }
 }
 
-export { FeedAPI, AuthAPI, UserAPI, OauthAPI }
+const OcrAPI = {
+    async requestOCR({ formData }) {
+        
+        let response = await axios.request({
+            method: 'post',
+            url: 'http://127.0.0.1:8000/recognize',
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+            data: formData
+        });
+
+        return response.data
+    }
+}
+
+export { FeedAPI, AuthAPI, UserAPI, OauthAPI, OcrAPI }

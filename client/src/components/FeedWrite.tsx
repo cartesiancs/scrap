@@ -6,19 +6,20 @@ import { FeedInput } from './Feed'
 
 import Navbar from './Navbar'
 import CheckSignin from './CheckSignin'
-import { Box, Button, Drawer, Typography } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Drawer, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 
-import Tesseract from 'tesseract.js';
+// import Tesseract from 'tesseract.js';
+import axios from "axios"
 
+import { OcrAPI } from "../api";
 
 
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 function FeedWrite() {
-
-
+    const [backdropOpen, setBackdropOpen] = React.useState(false);
     const [recognizeText, setRecognizeText] = useState('')
 
     const [listState, setListState] = React.useState({
@@ -48,7 +49,7 @@ function FeedWrite() {
           onKeyDown={toggleDrawer(anchor, false)}
         >
 
-            <TakePicture setRecognizeText={setRecognizeText}></TakePicture>
+            <TakePicture setRecognizeText={setRecognizeText} setBackdropOpen={setBackdropOpen}></TakePicture>
             <ListButton>수동으로 입력</ListButton>
 
         </Box>
@@ -59,8 +60,17 @@ function FeedWrite() {
         setListState({ ...listState, bottom: true });
     }, [])
 
+    useEffect(() => {
+        if (recognizeText != '') {
+            setBackdropOpen(false);
+
+        }
+    }, [recognizeText])
+
     return (
         <CheckSignin>
+            <BackdropProgress isOpen={backdropOpen}></BackdropProgress>
+
             <Navbar>
                 <Box sx={{ justifyContent: 'center' }}>
                     <Link to={'/write'}>
@@ -94,62 +104,97 @@ function FeedWrite() {
 
 }
 
-function TakePicture({ setRecognizeText }) {
+function TakePicture({ setRecognizeText, setBackdropOpen }) {
     const [isProcess, setProcess] = useState(false)
-    const [imageBlobUrl, setImageBlobUrl] = useState('')
+    const [imageFile, setImageFile] = useState<any>()
 
     const getFile = async (): Promise<any> => {
-        const getFileUrl = new Promise((response, reject): any => {
+        const getFileObject = new Promise((response, reject): any => {
             let input = document.createElement('input');
             input.type = 'file';
     
             input.onchange = (e: any) => { 
                 let file = e.target.files[0]; 
                 let objectURL = URL.createObjectURL(file);
+                setBackdropOpen(true)
+
     
-                response(objectURL)
+                response(file)
             }
     
             input.click();
         })
 
-        return getFileUrl
+        return getFileObject
 
     }
 
     const handleClickButton = async () => {
-        const blobUrl: string = await getFile()
-        setImageBlobUrl(blobUrl)
+        const file = await getFile()
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await OcrAPI.requestOCR({
+            formData: formData
+        })
+
+        setRecognizeText(response.data)
+
+        setImageFile(file)
         setProcess(true)
-        console.log(blobUrl)
     }
+
 
     return (
         <Box>
             <ListButton onClick={handleClickButton}>이미지 가져오기</ListButton>
-            <ProcessImageRecognize setRecognizeText={setRecognizeText} isProcess={isProcess} url={imageBlobUrl}></ProcessImageRecognize>
+            {/* <ProcessImageRecognize setRecognizeText={setRecognizeText} isProcess={isProcess} file={imageFile}></ProcessImageRecognize> */}
         </Box>
     )
 }
 
+function BackdropProgress({ isOpen }) {
+    return (
+        <Backdrop
+            sx={{ color: '#fff', zIndex: 10000 }}
+            open={isOpen}>
+            <CircularProgress color="inherit" />
+        </Backdrop>
+    )
+}
 
-function ProcessImageRecognize({ setRecognizeText, isProcess, url }) {
+
+function ProcessImageRecognize({ setRecognizeText, isProcess, file }) {
 
     const [progress, setProgress] = useState(0)
     
     useEffect(() => {
         if (isProcess) {
-            Tesseract.recognize(
-                url,
-                'kor',
-                { logger: (m: any) => {
-                    setProgress(m.progress * 100)
-                } }
-            ).then(({ data: { text } }) => {
-                console.log(text);
+            // Tesseract.recognize(
+            //     url,
+            //     'kor',
+            //     { logger: (m: any) => {
+            //         setProgress(m.progress * 100)
+            //     } }
+            // ).then(({ data: { text } }) => {
+            //     console.log(text);
                 
-                setRecognizeText(text)
-            })
+            //     setRecognizeText(text)
+            // })
+
+            const formData = new FormData();
+            console.log("dd", file)
+            formData.append("files", file);
+
+            axios({
+                method: 'post',
+                url: 'http://127.0.0.1:8000/recognize',
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+                data: console
+            });
         }
           
     }, [isProcess])
