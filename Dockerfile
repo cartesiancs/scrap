@@ -7,4 +7,4 @@ COPY . /app
 RUN npm run compile:prod
 RUN npm run bundle:prod
 CMD [ "pm2-runtime", "start", "npm", "--", "start" ] 
-EXPOSE 9030
+EXPOSE 9031
