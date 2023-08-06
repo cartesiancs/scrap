@@ -1,5 +1,5 @@
-import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Container } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -10,7 +10,7 @@ import { BrowserRouter } from 'react-router-dom';
 import RootPage from './pages/Root'
 import SignupPage from './pages/Signup'
 import LoginPage from './pages/Login'
-import LoginSelect from './pages/LoginSelect'
+import LoginSelectPage from './pages/LoginSelect'
 
 import NotfoundPage from './pages/Notfound'
 import MyProfilePage from './pages/MyProfile'
@@ -23,6 +23,7 @@ import './App.css'
 
 const App = () => {
     const isDarkmode = useSelector((state: any) => state.app.isDarkmode);
+    const isLogin = useSelector((state: any) => state.auth.isLogin);
 
     const darkTheme = createTheme({
         palette: {
@@ -33,6 +34,7 @@ const App = () => {
         },
     });
 
+
     return (
         <div>
             <ThemeProvider theme={darkTheme}>
@@ -42,14 +44,23 @@ const App = () => {
                     <BrowserRouter>
                         <Switch>
                             <Route exact path="/" component={RootPage} />
-                            <Route path="/profile" component={MyProfilePage} />
-                            <Route path="/write" component={FeedWritePage} />
+
+
+                            <Route
+                                path="/profile"
+                                render={() => (isLogin ? <MyProfilePage />  : <Redirect to={"/auth/select"} />)}
+                            />
                             
+                    
+                            <Route
+                                path="/write"
+                                component={() => (isLogin ? <FeedWritePage /> : <Redirect to="/auth/select" /> )}
+                            />
 
                             <Route path="/feed/*" component={ContentPage} />
                             <Route path="/user/*" component={ProfilePage} />
 
-                            <Route path="/auth/select" component={LoginSelect} />
+                            <Route path="/auth/select" component={LoginSelectPage} />
                             <Route path="/auth/login" component={LoginPage} />
                             <Route path="/auth/signup" component={SignupPage} />
 
