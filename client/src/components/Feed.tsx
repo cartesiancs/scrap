@@ -117,6 +117,9 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     const { thought, quotationText, quotationOrigin } = inputs
 
     const [alertTrigger, setAlertTrigger] = useState(0)
+    const [alertSuccessTrigger, setAlertSuccessTrigger] = useState(0)
+
+    
 
     const handleChange = (e) => {
         const { value, name } = e.target;
@@ -147,6 +150,8 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
             quotationText: '',
             quotationOrigin: ''
         })
+
+        setAlertSuccessTrigger(alertSuccessTrigger + 1)
 
         setTimeout(() => {
             patchFeed()
@@ -181,52 +186,83 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     }, [defaultQuotationText])
 
     return (
-        <Stack sx={{ marginTop: "1rem", marginBottom: "2rem" }} spacing={1}>
+        <Box>
+            <Stack sx={{ marginTop: "1rem", marginBottom: "2rem" }} spacing={1}>
+                <TextField
+                    id="outlined-textarea"
+                    label="인용구 출처"
+                    name="quotationOrigin"
+                    placeholder="예) 도서명, 사람 이름" 
+                    onChange={handleChange} 
+                    value={quotationOrigin}
+                    variant="filled"
 
-            <TextField
-                id="outlined-textarea"
-                label="quotationText"
-                name="quotationText"
-                placeholder="input quotationText..." 
-                onChange={handleChange} 
-                value={quotationText}
-                multiline
-            />
-            <Typography sx={{ fontSize: "0.8rem", textAlign: 'right', color: inputs.quotationText.length < 990 ? "text.primary" : "#fc4242"  }}>{inputs.quotationText.length}/1000</Typography>
-
-            <TextField
-                id="outlined-textarea"
-                label="quotationOrigin"
-                name="quotationOrigin"
-                placeholder="input quotationOrigin..." 
-                onChange={handleChange} 
-                value={quotationOrigin}
-                multiline
-            />
+                />
 
 
-            <TextField
-                id="outlined-textarea"
-                label="thought"
-                name="thought"
-                placeholder="input thought..." 
-                onChange={handleChange} 
-                value={thought}
-                multiline
-            />
-            <Button variant="contained" onClick={handleClick} disableElevation><SendIcon /> </Button>
+                <TextField
+                    id="outlined-textarea"
+                    label="인용구"
+                    name="quotationText"
+                    placeholder="책 속 구절, 인물의 명언" 
+                    onChange={handleChange} 
+                    value={quotationText}
+                    rows={10}
+
+                    multiline
+                />
+                <Typography sx={{ fontSize: "0.8rem", textAlign: 'right', color: inputs.quotationText.length < 990 ? "text.primary" : "#fc4242"  }}>{inputs.quotationText.length}/1000</Typography>
+
+                <ToggleInput title={'생각 쓰기'}>
+                    <TextField
+                        id="outlined-textarea"
+                        label="생각"
+                        name="thought"
+                        placeholder="글귀에 대한 생각" 
+                        onChange={handleChange} 
+                        value={thought}
+                        multiline
+                    />
+                </ToggleInput>
+            </Stack>
+            <Button variant="contained" onClick={handleClick} sx={{ marginTop: '1rem', width: '100%' }} disableElevation><SendIcon /> </Button>
             <Popup trigger={alertTrigger} message="길이가 너무 길어요" severity="info"></Popup>
+            <Popup trigger={alertSuccessTrigger} message="성공적으로 작성했어요" severity="success"></Popup>
 
-        </Stack>
+        </Box>
+
     );
 }
 
+
+function ToggleInput({ children, title }) {
+    const [activate, setActivate] = useState(false)
+
+    const handleClick = () => {
+        setActivate(true)
+    }
+
+    if (activate) {
+        return (
+            <>
+                {children}
+            </>
+        )  
+    }
+
+    return (
+        <div>
+            <Button sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', padding: "16.5px 14px" }} variant="outlined" onClick={handleClick}><Typography sx={{ flexDirection: 'row' }} >{title}</Typography></Button>
+        </div>
+
+    )
+}
 
 function FeedBody({ feed }) {
     const cutCriteria = 400
     const isDarkmode = useSelector((state: any) => state.app.isDarkmode);
     const [isOverflow, setIsOverflow] = useState(false)
-    const typographyStyle = { fontSize: 18, whiteSpace: 'pre-line', wordWrap: 'break-word', padding: '1rem', backgroundColor: isDarkmode? '#18181a' : '#f5f5f7', fontFamily: 'Gowun Batang' }
+    const typographyStyle = { whiteSpace: 'pre-line', wordWrap: 'break-word', padding: '1rem', backgroundColor: isDarkmode? '#18181a' : '#f5f5f7', fontFamily: 'Gowun Batang' }
     
 
     if (feed.type == 0) {
@@ -253,16 +289,17 @@ function FeedBody({ feed }) {
             </Box>
 
             {isOverflow ? (
-                <Box sx={{...typographyStyle}} color="text.secondary">
+                <Box sx={{fontSize: 18, ...typographyStyle}} color="text.secondary">
                     {feed.quotationText.substr(0, cutCriteria)} 
                     <Typography onClick={handleClickMoreView}>(더보기)</Typography>
                 </Box>
 
                 ) : (
-                <Box sx={{...typographyStyle}} color="text.secondary">
+                <Box sx={{fontSize: 18, ...typographyStyle}} color="text.secondary">
                     {feed.quotationText}
                     <br /> 
-                    {feed.quotationOrigin}
+                    <Typography sx={{ fontSize: "0.9rem", marginTop: '1.3rem', fontFamily: 'Gowun Batang' }}>_{feed.quotationOrigin}</Typography>
+                    
     
                 </Box>
             )}
