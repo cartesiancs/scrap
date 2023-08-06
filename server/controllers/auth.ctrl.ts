@@ -5,6 +5,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import passport from "passport";
 import oauth from '../config/oauth.js';
 import server from '../config/server.js';
+import { v4 as uuidv4 } from 'uuid';
 
 
 const GOOGLE_CLIENT_ID = oauth["GOOGLE"].GOOGLE_CLIENT_ID
@@ -22,27 +23,25 @@ passport.use(new GoogleStrategy({
   },
   async function(accessToken, refreshToken, profile, cb) {
     console.log(accessToken, refreshToken, profile, profile.id)
-    const userId = profile.id
+    const userId = uuidv4().slice(0, 18).replaceAll('-', '')
 
-    const getUserPasswordHash = await userService.encryptPassword(accessToken)
-    const userPasswordHash = getUserPasswordHash.userPasswordHash
     const userEmail = profile.emails[0].value
     const provider = 'google'
     
     const isDuplicate = await userModel.read({
-      userId: profile.id
+      userId: userId
     })
 
     if (isDuplicate.status == 0) {
         let data = await userModel.create({
-          userId: userId,
-          userPasswordHash: userPasswordHash,
-          userEmail: userEmail,
-          provider: provider
+            userId: userId,
+            userPasswordHash: '0',
+            userEmail: userEmail,
+            provider: provider
         })
     }
 
-    let createdToken = await userService.grantToken(userId);
+    let createdToken = await userService.grantToken({ userId: userId });
 
     return cb(null, {
         profile: profile,

@@ -8,6 +8,7 @@ import Navbar from './Navbar'
 import CheckSignin from './CheckSignin'
 import { Backdrop, Box, Button, CircularProgress, Drawer, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
+import { CropImage } from "./CropImage";
 
 // import Tesseract from 'tesseract.js';
 import axios from "axios"
@@ -87,6 +88,7 @@ function FeedWrite() {
                 <FeedInput defaultQuotationText={recognizeText}></FeedInput>
             </Box>
 
+
             {(['bottom'] as const).map((anchor) => (
                 <React.Fragment key={anchor}>
                     <Drawer
@@ -107,6 +109,7 @@ function FeedWrite() {
 function TakePicture({ setRecognizeText, setBackdropOpen }) {
     const [isProcess, setProcess] = useState(false)
     const [imageFile, setImageFile] = useState<any>()
+    const [alertDialogTrigger, setAlertDialogTrigger] = useState(0)
 
     const getFile = async (): Promise<any> => {
         const getFileObject = new Promise((response, reject): any => {
@@ -117,9 +120,13 @@ function TakePicture({ setRecognizeText, setBackdropOpen }) {
                 let file = e.target.files[0]; 
                 let objectURL = URL.createObjectURL(file);
                 setBackdropOpen(true)
+                // setAlertDialogTrigger()
 
     
-                response(file)
+                response({
+                    object: file,
+                    url: objectURL
+                })
             }
     
             input.click();
@@ -133,7 +140,7 @@ function TakePicture({ setRecognizeText, setBackdropOpen }) {
         const file = await getFile()
 
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("file", file.object);
 
         const response = await OcrAPI.requestOCR({
             formData: formData
@@ -141,7 +148,7 @@ function TakePicture({ setRecognizeText, setBackdropOpen }) {
 
         setRecognizeText(response.data)
 
-        setImageFile(file)
+        setImageFile(file.object)
         setProcess(true)
     }
 
@@ -149,6 +156,11 @@ function TakePicture({ setRecognizeText, setBackdropOpen }) {
     return (
         <Box>
             <ListButton onClick={handleClickButton}>이미지 가져오기</ListButton>
+
+            {/* <AlertDialog trigger={alertDialogTrigger} title="Image Crop">
+                <CropImage imageUrl={}></CropImage>
+
+            </AlertDialog> */}
             {/* <ProcessImageRecognize setRecognizeText={setRecognizeText} isProcess={isProcess} file={imageFile}></ProcessImageRecognize> */}
         </Box>
     )
