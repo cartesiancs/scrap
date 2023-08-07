@@ -44,7 +44,7 @@ const userController = {
         const createdToken = getJwtToken.userJwtToken
 
         if (isGrantAuthorization.status == 0) {
-            return res.status(401).json({status:0})
+            return res.status(200).json({status:0})
         }
 
         res.status(200).json({status:1, token: createdToken})

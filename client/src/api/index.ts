@@ -185,10 +185,10 @@ const OcrAPI = {
         
         let response = await axios.request({
             method: 'post',
-            // url: 'http://192.168.0.62:8000/recognize',
-            url: 'https://ocr.scrap.devent.kr/recognize',
+            url: 'http://localhost:9040/recognize',
+            // url: 'https://ocr.scrap.devent.kr/recognize',
             headers: {
-                "Content-Type": "multipart/form-data",
+                "Content-Type": "multipart/form-data"
             },
             data: formData
         });
