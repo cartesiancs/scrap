@@ -23,22 +23,26 @@ passport.use(new GoogleStrategy({
   },
   async function(accessToken, refreshToken, profile, cb) {
     console.log(accessToken, refreshToken, profile, profile.id)
-    const userId = uuidv4().slice(0, 18).replaceAll('-', '')
+    let userId = ''
+    const createdUserId = uuidv4().slice(0, 18).replaceAll('-', '')
 
     const userEmail = profile.emails[0].value
     const provider = 'google'
     
     const isDuplicate = await userModel.read({
-      userId: userId
+      userEmail: userEmail
     })
 
     if (isDuplicate.status == 0) {
-        let data = await userModel.create({
-            userId: userId,
+        userId = createdUserId
+        await userModel.create({
+            userId: createdUserId,
             userPasswordHash: '0',
             userEmail: userEmail,
             provider: provider
         })
+    } else {
+        userId = isDuplicate.user.userId
     }
 
     let createdToken = await userService.grantToken({ userId: userId });
