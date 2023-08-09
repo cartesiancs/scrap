@@ -8,7 +8,7 @@ import { FeedAPI } from "../api";
 
 import SendIcon from '@mui/icons-material/Send';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-
+import ShareIcon from '@mui/icons-material/Share';
 
 function Feed() {
     const dispatch = useDispatch();
@@ -271,15 +271,18 @@ function FeedBody({ feed }) {
         )
     }
 
+
     const handleClickMoreView = () => {
         setIsOverflow(false)
     }
+
 
     useEffect(() => {
         if (feed.quotationText.length > 0) {
             setIsOverflow(feed.quotationText.length > cutCriteria ? true : false)
         } 
     }, [])
+
 
     return (
         <Box sx={{ marginBottom: '2rem', padding: '0rem', backgroundColor: isDarkmode? '#1d1e1f' : '#ebebed', borderRadius: '0.3rem' }}>
@@ -309,6 +312,8 @@ function FeedBody({ feed }) {
             <Box sx={{ fontSize: 14, padding: '1rem', whiteSpace: 'pre-line', wordWrap: 'break-word' }} color="text.secondary">
                 {feed.thought}
             </Box>
+
+
         </Box>
     )
 }
@@ -353,6 +358,7 @@ function FeedMenu({ feed }) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [alertTrigger, setAlertTrigger] = useState(0)
     const [alertDialogTrigger, setAlertDialogTrigger] = useState(0)
+    const [alertCopyTrigger, setAlertCopyTrigger] = useState(0)
 
     const isLogin = useSelector((state: any) => state.auth.isLogin);
     const userId = useSelector((state: any) => state.auth.userId);
@@ -386,6 +392,19 @@ function FeedMenu({ feed }) {
         handleClose()
     }
 
+
+    const handleClickShareButton = () => {
+        let text = location.origin + '/feed/' + feed.idx;
+ 
+        navigator.clipboard.writeText(text)
+        .then(() => {
+            setAlertCopyTrigger( alertCopyTrigger + 1 )
+        })
+        .catch(err => {
+            console.error('Error in copying text: ', err);
+        });
+    }
+
     return (
         <>
         <IconButton
@@ -407,10 +426,11 @@ function FeedMenu({ feed }) {
             'aria-labelledby': 'basic-button',
             }}>
 
-            <MenuItem color="primary" onClick={handleShowInfo}>info</MenuItem>
+            <MenuItem color="primary" onClick={handleShowInfo}>피드 정보</MenuItem>
+            <MenuItem color="primary" onClick={handleClickShareButton}>링크 복사</MenuItem>
 
             {(isLogin && feed.owner.userId == userId) ? (
-                <MenuItem sx={{ color: "#e64840" }} onClick={handleDelete}>delete</MenuItem>
+                <MenuItem sx={{ color: "#e64840" }} onClick={handleDelete}>삭제</MenuItem>
                
             ) : (
                 <></>
@@ -418,6 +438,7 @@ function FeedMenu({ feed }) {
         </Menu>
 
         <Popup trigger={alertTrigger} message="삭제 완료" severity="success"></Popup>
+        <Popup trigger={alertCopyTrigger} message="성공적으로 복사했어요" severity="success"></Popup>
 
         <AlertDialog trigger={alertDialogTrigger} title="피드 정보">
             <p>{feed.date}</p>
@@ -435,6 +456,19 @@ function FeedMenu({ feed }) {
     )
 }
 
+
+type FeedActionButtonType = {
+    children: any
+    onClick?: any
+}
+
+function FeedActionButton({ children, onClick }: FeedActionButtonType) {
+    return (
+        <IconButton aria-label="delete" onClick={onClick}>
+            {children}
+        </IconButton>
+    )
+}
 
 function FeedSkeleton() {
     return (
