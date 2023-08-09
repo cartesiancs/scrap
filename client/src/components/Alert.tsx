@@ -44,7 +44,11 @@ function AlertDialog(props) {
 
     useEffect(() => {
         if (props.trigger > 0) {
-            setOpen(true);
+          setOpen(true);
+        }
+
+        if (props.trigger == -1) {
+          setOpen(false);
         }
     }, [props.trigger])
   
