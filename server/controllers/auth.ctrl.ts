@@ -6,6 +6,7 @@ import passport from "passport";
 import oauth from '../config/oauth.js';
 import server from '../config/server.js';
 import { v4 as uuidv4 } from 'uuid';
+import { webhook } from '../services/discord.serv.js'
 
 
 const GOOGLE_CLIENT_ID = oauth["GOOGLE"].GOOGLE_CLIENT_ID
@@ -41,8 +42,16 @@ passport.use(new GoogleStrategy({
             userEmail: userEmail,
             provider: provider
         })
+
+        webhook.send({
+            message: `${userId} ${userEmail} 가입`
+        })
     } else {
         userId = isDuplicate.user.userId
+
+        webhook.send({
+            message: `${userId} ${userEmail} google 로그인`
+        })
     }
 
     let createdToken = await userService.grantToken({ userId: userId });
