@@ -165,17 +165,17 @@ function FeedWrite() {
 }
 
 function TakePicture({ setRecognizeText, setBackdropOpen, setImageFile, setImageFileUrl }) {
-    const [isProcess, setProcess] = useState(false)
-
 
     const getFile = async (): Promise<any> => {
-        const getFileObject = new Promise((response, reject): any => {
+        const getFileObject = await new Promise((response, reject): any => {
             let input = document.createElement('input');
             input.type = 'file';
     
             input.onchange = (e: any) => { 
+                console.log("file", e)
+
                 let file = e.target.files[0]; 
-                let objectURL = URL.createObjectURL(file);
+                let objectURL = window.URL.createObjectURL(file);
                 // setBackdropOpen(true)
 
     
@@ -188,6 +188,8 @@ function TakePicture({ setRecognizeText, setBackdropOpen, setImageFile, setImage
             input.click();
         })
 
+        console.log("getFileObject", getFileObject)
+
         return getFileObject
 
     }
@@ -195,13 +197,8 @@ function TakePicture({ setRecognizeText, setBackdropOpen, setImageFile, setImage
     const handleClickButton = async () => {
         const file = await getFile()
 
-        const formData = new FormData();
-        formData.append("file", file.object);
-
-
         setImageFile(file.object)
         setImageFileUrl(file.url)
-        setProcess(true)
     }
 
 

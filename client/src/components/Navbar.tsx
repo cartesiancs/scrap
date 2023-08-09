@@ -33,26 +33,27 @@ function Navbar(props) {
       return (
         <AppBar position="fixed" color="primary" sx={{ paddingX: "1rem", top: 'auto', bottom: 0, ...blurBackground }}>
           <Toolbar>
-            <Button sx={{ padding: '1rem'}} color="inherit" aria-label="open drawer">
-              <Link to={'/'}>
-                <FeedIcon sx={{ fontSize: '1.2rem', color: itemColor, position: 'relative', top: '0.2rem' }} />
-              </Link>
-            </Button>
+            <Link to={'/'}>
+              <Button sx={{ padding: '1rem'}} color="inherit" aria-label="open drawer">
+                <FeedIcon sx={{ fontSize: '1.2rem', color: itemColor, position: 'relative' }} />
+              </Button>
+            </Link>
+
             <Box sx={{ flexGrow: 1 }} />
 
-            <Button sx={{ padding: '1rem'}} color="inherit">
-              <Link to={'/write'}>
-                <CreateIcon sx={{ fontSize: '1.2rem', color: itemColor, position: 'relative', top: '0.2rem' }} />
-              </Link>
-            </Button>
+            <Link to={'/write'}>
+              <Button sx={{ padding: '1rem'}} color="inherit">
+                <CreateIcon sx={{ fontSize: '1.2rem', color: itemColor, position: 'relative' }} />
+              </Button>
+            </Link>
+
             <Box sx={{ flexGrow: 1 }} />
 
-
-            <Button sx={{ padding: '1rem'}} color="inherit">
-              <Link to={'/profile'}>
-                <PersonIcon sx={{ fontSize: '1.2rem', color: itemColor, position: 'relative', top: '0.2rem' }} />
-              </Link>
-            </Button>
+            <Link to={'/profile'}>
+              <Button sx={{ padding: '1rem'}} color="inherit">
+                <PersonIcon sx={{ fontSize: '1.2rem', color: itemColor, position: 'relative' }} />
+              </Button>
+            </Link>
           </Toolbar>
         </AppBar>
       )

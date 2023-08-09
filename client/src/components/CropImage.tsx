@@ -10,10 +10,10 @@ function CropImage({ imageUrl, setImageCanvas }) {
 
   const onCrop = () => {
     const imageElement: any = cropperRef?.current;
-    const cropper = imageElement?.cropper;
-    const blobUrl = cropper.getCroppedCanvas().toDataURL()
-    setCroppedImage(blobUrl)
-    setImageCanvas(cropper.getCroppedCanvas())
+    // const cropper = imageElement?.cropper;
+    // const blobUrl = cropper.getCroppedCanvas().toDataURL()
+    // setCroppedImage(blobUrl)
+    setImageCanvas(imageElement.cropper.getCroppedCanvas())
   };
 
   return (
