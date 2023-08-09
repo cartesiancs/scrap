@@ -59,7 +59,7 @@ function Profile() {
                 spacing={0}
                 direction="column"
                 alignItems="center"
-                sx={{ marginBottom: '1.5rem' }}>
+                sx={{ marginBottom: '1.5rem', marginTop: '2rem'  }}>
                 <Typography variant="h4">{userProfileId}</Typography>
 
             </Grid>
