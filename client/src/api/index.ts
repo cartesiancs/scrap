@@ -88,6 +88,24 @@ const FeedAPI = {
         })
     
         return response.data
+    },
+    
+    
+    async search({ sentence }) {
+        let token = Cookies.get("user")
+        
+        let response = await axios.request({
+            method: 'get',
+            url: `/api/feeds/search/${sentence}`,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "x-access-token": token
+    
+            },
+            responseType: 'json'
+        })
+    
+        return response.data
     }
 }
 

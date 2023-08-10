@@ -117,7 +117,7 @@ const feedController = {
         console.log(data)
     
         if (data.status == 1) {
-            res.status(200).json({status:1, data: data})
+            res.status(200).json({status:1, data: data.result })
         } else {
             res.status(401).json({status:0})
         }

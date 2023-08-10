@@ -18,6 +18,9 @@ import ProfilePage from './pages/UserProfile'
 
 import ContentPage from './pages/Content'
 import FeedWritePage from './pages/Write'
+import FeedSearchPage from './pages/Search'
+
+
 
 import './App.css'
 
@@ -59,6 +62,8 @@ const App = () => {
 
                             <Route path="/feed/*" component={ContentPage} />
                             <Route path="/user/*" component={ProfilePage} />
+                            <Route path="/search/*" component={FeedSearchPage} />
+
 
                             <Route path="/auth/select" component={LoginSelectPage} />
                             <Route path="/auth/login" component={LoginPage} />
