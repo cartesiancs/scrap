@@ -27,7 +27,7 @@ export async function init (app) {
         contentSecurityPolicy: {
             directives: {
                 "default-src": [ "'self'"],
-                "connect-src": ["localhost:*", "*.scrap.devent.kr"],
+                "connect-src": ["localhost:*", "*.scrap.devent.kr", , "scrap.devent.kr"],
                 "script-src": ["'self'", "*.jsdelivr.net", '*.scrap.devent.kr', "'unsafe-inline'", "'unsafe-eval'"],
                 'img-src': ["'self'", 'data:', 'blob:'],
 
