@@ -1,4 +1,4 @@
-import { Between, FindOptionsOrder } from "typeorm";
+import { Between, FindOptionsOrder, Like } from "typeorm";
 import { MySQLConnect, AppDataSource } from '../databases/db.js'
 import { Feed } from "../databases/entity/Feed.js";
 
@@ -122,7 +122,22 @@ const feedModel = {
         } catch (err) {
             throw Error(err)
         }
-    }
+    },
+
+
+    search: async function ({ sentence }) {
+        try {
+            const feedRepository = AppDataSource.getRepository(Feed);
+            const searchFeed = await feedRepository.findBy({
+                quotationText: Like(`%${sentence}%`)
+            });
+
+            return { status: 1, result: searchFeed }
+
+        } catch (err) {
+            throw Error(err)
+        }
+    },
 }
 
 export { feedModel }

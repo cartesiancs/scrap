@@ -108,7 +108,20 @@ const feedController = {
         } else {
             res.status(401).json({status:0})
         }
-    }
+    },
+
+    search: async function (req, res) {    
+        let sentence = sanitizeHtml(req.params.sentence);
+        
+        let data: any = await feedModel.search({ sentence })
+        console.log(data)
+    
+        if (data.status == 1) {
+            res.status(200).json({status:1, data: data.result })
+        } else {
+            res.status(401).json({status:0})
+        }
+    },
 }
 
 

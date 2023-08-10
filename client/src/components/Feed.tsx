@@ -9,6 +9,7 @@ import { FeedAPI } from "../api";
 import SendIcon from '@mui/icons-material/Send';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ShareIcon from '@mui/icons-material/Share';
+import SearchIcon from '@mui/icons-material/Search';
 
 function Feed() {
     const dispatch = useDispatch();
@@ -35,12 +36,16 @@ function Feed() {
             }, 1000);
         }
     }
+
+    useEffect(() => {
+        dispatch(clear({}))
+
+    }, [])
     
 
     useEffect(() => {
         if (!fetchingStop) {
             const loadFeedData = async () => {
-                dispatch(clear({}))
 
                 let getFeeds = await FeedAPI.getFeed(fetching, {
                     isrange: 'true',
@@ -80,6 +85,8 @@ function Feed() {
             <Grid container sx={{ marginTop: "1rem" }} justifyContent="center" spacing={3}>
                 <Grid item xs={12} md={6}>
 
+                    <FeedSearch></FeedSearch>
+
                     {feeds.map(feed => (
                         <FeedBody feed={feed}></FeedBody>
     
@@ -93,6 +100,10 @@ function Feed() {
     return (
         <Grid container sx={{ marginTop: "1rem" }} justifyContent="center" spacing={3}>
             <Grid item xs={12} md={6}>
+
+                <FeedSearch></FeedSearch>
+
+
                 {feeds.map(feed => (
                     <FeedBody feed={feed}></FeedBody>
 
@@ -261,7 +272,12 @@ function ToggleInput({ children, title }) {
     )
 }
 
-function FeedBody({ feed }) {
+type FeedBodyType = {
+    feed: string
+    isShowUsername?: boolean
+}
+
+function FeedBody({ feed, isShowUsername = true }) {
     const cutCriteria = 400
     const isDarkmode = useSelector((state: any) => state.app.isDarkmode);
     const [isOverflow, setIsOverflow] = useState(false)
@@ -285,6 +301,29 @@ function FeedBody({ feed }) {
             setIsOverflow(feed.quotationText.length > cutCriteria ? true : false)
         } 
     }, [])
+
+    if (!isShowUsername) {  
+        return (
+            <Box sx={{ marginBottom: '2rem', padding: '0rem', backgroundColor: isDarkmode? '#1d1e1f' : '#ebebed', borderRadius: '0.3rem' }}>
+                {isOverflow ? (
+                    <Box sx={{fontSize: 18, ...typographyStyle}} color="text.secondary">
+                        {feed.quotationText.substr(0, cutCriteria)} 
+                        <Typography onClick={handleClickMoreView}>(더보기)</Typography>
+                    </Box>
+
+                    ) : (
+                    <Box sx={{fontSize: 18, ...typographyStyle}} color="text.secondary">
+                        {feed.quotationText}
+                        <br /> 
+                        <Typography sx={{ fontSize: "0.9rem", marginTop: '1.3rem', fontFamily: 'Gowun Batang' }}>_{feed.quotationOrigin}</Typography>
+                        
+        
+                    </Box>
+                )}
+
+            </Box>
+        )
+    }
 
 
     return (
@@ -470,6 +509,39 @@ function FeedActionButton({ children, onClick }: FeedActionButtonType) {
         <IconButton aria-label="delete" onClick={onClick}>
             {children}
         </IconButton>
+    )
+}
+
+function FeedSearch() {
+    const [searchValue, setSearchValue] = useState('')
+
+    const handleSubmit = () => {
+        location.href = '/search/'+searchValue
+    }
+
+    const handleOnchange = (e) => {
+        setSearchValue(e.target.value)
+    }
+
+    const handleOnKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleSubmit()
+        }
+    }
+
+
+    return (
+        <TextField 
+            sx={{ width: '100%', marginBottom: "3rem" }}
+            label="글 검색" 
+            variant="outlined"
+            onSubmit={handleSubmit}
+            onChange={handleOnchange}
+            onKeyDown={handleOnKeyDown}
+            value={searchValue}
+            InputProps={{endAdornment: <SearchIcon />}}
+        />
+
     )
 }
 
