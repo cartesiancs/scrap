@@ -3,6 +3,23 @@
 import axios from "axios"
 import Cookies from 'js-cookie'
 
+
+const AppAPI = {
+    async getServerVersion() {
+        let response = await axios.request({
+            method: 'get',
+            url: `/api/server`,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            responseType: 'json'
+        })
+    
+    
+        return response.data
+    },
+}
+
 const FeedAPI = {
     async getFeed(feedIdx, fetchParams) {
         let response = await axios.request({
@@ -182,11 +199,14 @@ const OauthAPI = {
 
 const OcrAPI = {
     async requestOCR({ formData }) {
-        
+
+        const application = await AppAPI.getServerVersion()
+        const ocrUrl = application.server.mode == 'development' ? 'http://localhost:9040/recognize' : 'https://ocr.scrap.devent.kr/recognize'
+        console.log(ocrUrl)
+
         let response = await axios.request({
             method: 'post',
-            url: 'http://localhost:9040/recognize',
-            // url: 'https://ocr.scrap.devent.kr/recognize',
+            url: ocrUrl,
             headers: {
                 "Content-Type": "multipart/form-data"
             },
