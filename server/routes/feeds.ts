@@ -11,8 +11,10 @@ router.get('/', errorHandleController(feedController.get));
 router.post('/', tokenMiddleware.check, errorHandleController(feedController.insert));
 router.delete('/:idx', tokenMiddleware.check, errorHandleController(feedController.delete));
 router.put('/:idx', tokenMiddleware.check, errorHandleController(feedController.update));
+router.get('/search/:sentence', errorHandleController(feedController.search));
 
 router.get('/user/:userId', errorHandleController(feedUserController.get));
+
 
 
 export default router;
