@@ -49,31 +49,30 @@ function Profile() {
 
 
     return (
-        <Grid container spacing={3}>
-            <Grid item xs md>
-            </Grid>
-            <Grid item xs={10} md={6} sx={{ marginTop: "6rem" }}>
-                <Navbar></Navbar>
+        <Grid container sx={{ marginTop: "1rem" }} justifyContent="center" spacing={3}>
+            <Grid item xs={12} md={6}>
+            <Navbar></Navbar>
 
-                
-                <Grid
-                    container
-                    spacing={0}
-                    direction="column"
-                    alignItems="center"
-                    sx={{ marginBottom: '1.5rem' }}>
-                    <Typography variant="h4">{userProfileId}</Typography>
-
-                </Grid>
-
-                {content.map(feed => (
-                    <FeedBody feed={feed}></FeedBody>
-                ))}
+                    
+            <Grid
+                container
+                spacing={0}
+                direction="column"
+                alignItems="center"
+                sx={{ marginBottom: '1.5rem', marginTop: '2rem'  }}>
+                <Typography variant="h4">{userProfileId}</Typography>
 
             </Grid>
-            <Grid item xs md>
+
+            {content.map(feed => (
+                <FeedBody feed={feed}></FeedBody>
+            ))}
+
             </Grid>
         </Grid>
+
+
+
     );
 
 }

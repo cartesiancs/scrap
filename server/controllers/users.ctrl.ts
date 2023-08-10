@@ -1,7 +1,7 @@
 
 import { userService } from '../services/users.serv.js';
-
 import { userModel } from '../models/users.model.js';
+import { webhook } from '../services/discord.serv.js'
 
 const userController = {
     create: async function  (req, res) {
@@ -42,6 +42,10 @@ const userController = {
 
         const getJwtToken = await userService.grantToken({ userId: userId });
         const createdToken = getJwtToken.userJwtToken
+
+        webhook.send({
+            message: `${userId} ${userEmail} 가입`
+        })
 
         if (isGrantAuthorization.status == 0) {
             return res.status(200).json({status:0})

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { FeedInput } from './Feed'
 
@@ -14,18 +14,26 @@ import { CropImage } from "./CropImage";
 import axios from "axios"
 
 import { OcrAPI } from "../api";
+import { AlertDialog } from "./Alert";
 
 
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 function FeedWrite() {
-    const [backdropOpen, setBackdropOpen] = React.useState(false);
-    const [recognizeText, setRecognizeText] = useState('')
+    const [backdropOpen, setBackdropOpen] = useState(false);
+    const [recognizeText, setRecognizeText] = useState('')    
+    const [alertDialogTrigger, setAlertDialogTrigger] = useState(0)
+
+    const [imageFile, setImageFile] = useState<any>()
+    const [imageFileUrl, setImageFileUrl] = useState('')
+    const [cropImageCanvas, setImageCanvas]: any = useState('')
 
     const [listState, setListState] = React.useState({
         bottom: false
     });
+    
+
     
     const toggleDrawer =
     (anchor: Anchor, open: boolean) =>
@@ -50,13 +58,88 @@ function FeedWrite() {
           onKeyDown={toggleDrawer(anchor, false)}
         >
 
-            <TakePicture setRecognizeText={setRecognizeText} setBackdropOpen={setBackdropOpen}></TakePicture>
+            <ListButton onClick={handleClickButton}>이미지 가져오기</ListButton>
             <ListButton>수동으로 입력</ListButton>
 
         </Box>
     );
 
-      
+    const handleCropButtonClick = async () => {
+        setAlertDialogTrigger( -1 )
+
+        const blobImageObject: any = await new Promise((resolve, reject) => {
+            cropImageCanvas.toBlob((blob) => {
+                if (!blob) {
+                  console.error('Canvas is empty');
+                  return;
+                }
+                blob.name = 'a.jpg';
+    
+                setBackdropOpen(true)
+
+                resolve(blob)
+
+            }, 'image/jpeg');
+        })
+
+        const blobImage = new File([blobImageObject], blobImageObject.name, { type: blobImageObject.type });
+    
+        const formData = new FormData();
+        formData.append("file", blobImage);
+
+        const response = await OcrAPI.requestOCR({
+            formData: formData
+        })
+
+        setRecognizeText(response.data)
+    }
+
+    const getFile = async (): Promise<any> => {
+        const getFileObject = await new Promise((response, reject): any => {
+            let input = document.createElement('input');
+            input.type = 'file';
+            input.setAttribute('accept', 'image/*')
+
+            // input.onchange = (e: any) => { 
+
+            // }
+
+            console.log(input)
+
+            input.addEventListener("change", (e: any) => {
+                let file = e.target.files[0]; 
+                let objectURL = window.URL.createObjectURL(file);
+                console.log(e)
+
+                // setBackdropOpen(true)
+
+    
+                response({
+                    object: file,
+                    url: objectURL
+                })
+            });
+    
+            input.click();
+        })
+
+        return getFileObject
+    }
+
+
+
+    const handleClickButton = async () => {
+        const file = await getFile()
+
+        setImageFile(file.object)
+        setImageFileUrl(file.url)
+
+        setAlertDialogTrigger(1 + Math.random()) 
+
+
+    }
+
+
     useEffect(() => {
         setListState({ ...listState, bottom: true });
     }, [])
@@ -64,9 +147,14 @@ function FeedWrite() {
     useEffect(() => {
         if (recognizeText != '') {
             setBackdropOpen(false);
-
         }
     }, [recognizeText])
+
+    // useEffect(() => {
+    //     if (imageFileUrl != '') {
+    //         setAlertDialogTrigger( alertDialogTrigger + 1 )
+    //     }
+    // }, [imageFileUrl])
 
     return (
         <CheckSignin>
@@ -84,9 +172,18 @@ function FeedWrite() {
                 </Box>
             </Navbar>
 
-            <Box sx={{ marginTop: '5rem', display: listState.bottom ? 'none' : 'block' }}>
+            <Box sx={{ marginTop: '5rem', marginBottom: '5rem', display: listState.bottom ? 'none' : 'block' }}>
                 <FeedInput defaultQuotationText={recognizeText}></FeedInput>
             </Box>
+
+            <br />
+
+
+            <AlertDialog trigger={alertDialogTrigger} title="Image Crop">
+                <CropImage setImageCanvas={setImageCanvas} imageUrl={imageFileUrl}></CropImage>
+                <Button variant="contained" onClick={handleCropButtonClick} sx={{ marginTop: '1rem', width: '100%' }} disableElevation>자르기</Button>
+
+            </AlertDialog>
 
 
             {(['bottom'] as const).map((anchor) => (
@@ -106,65 +203,7 @@ function FeedWrite() {
 
 }
 
-function TakePicture({ setRecognizeText, setBackdropOpen }) {
-    const [isProcess, setProcess] = useState(false)
-    const [imageFile, setImageFile] = useState<any>()
-    const [alertDialogTrigger, setAlertDialogTrigger] = useState(0)
 
-    const getFile = async (): Promise<any> => {
-        const getFileObject = new Promise((response, reject): any => {
-            let input = document.createElement('input');
-            input.type = 'file';
-    
-            input.onchange = (e: any) => { 
-                let file = e.target.files[0]; 
-                let objectURL = URL.createObjectURL(file);
-                setBackdropOpen(true)
-                // setAlertDialogTrigger()
-
-    
-                response({
-                    object: file,
-                    url: objectURL
-                })
-            }
-    
-            input.click();
-        })
-
-        return getFileObject
-
-    }
-
-    const handleClickButton = async () => {
-        const file = await getFile()
-
-        const formData = new FormData();
-        formData.append("file", file.object);
-
-        const response = await OcrAPI.requestOCR({
-            formData: formData
-        })
-
-        setRecognizeText(response.data)
-
-        setImageFile(file.object)
-        setProcess(true)
-    }
-
-
-    return (
-        <Box>
-            <ListButton onClick={handleClickButton}>이미지 가져오기</ListButton>
-
-            {/* <AlertDialog trigger={alertDialogTrigger} title="Image Crop">
-                <CropImage imageUrl={}></CropImage>
-
-            </AlertDialog> */}
-            {/* <ProcessImageRecognize setRecognizeText={setRecognizeText} isProcess={isProcess} file={imageFile}></ProcessImageRecognize> */}
-        </Box>
-    )
-}
 
 function BackdropProgress({ isOpen }) {
     return (
