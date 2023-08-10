@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import helmet from "helmet"
 import { engine } from 'express-handlebars';
 
 
@@ -22,6 +23,17 @@ export async function init (app) {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended : true}));
     app.use(cookieParser());
+    app.use(helmet({
+        contentSecurityPolicy: {
+            directives: {
+                "default-src": [ "'self'"],
+                "connect-src": ["localhost:*", "*.scrap.devent.kr"],
+                "script-src": ["'self'", "*.jsdelivr.net", '*.scrap.devent.kr', "'unsafe-inline'", "'unsafe-eval'"],
+                'img-src': ["'self'", 'data:', 'blob:'],
+
+            },
+        },
+    }));
 
     app.use((err, req, res, next) => {
        res.status(500).send({
