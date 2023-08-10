@@ -63,7 +63,7 @@ function Navbar(props) {
         <Box sx={{ flexGrow: 1, width: '100%' }} >
           <AppBar position="fixed" sx={{ ...blurBackground }}>
             <Toolbar>
-              <Typography component="div" color="text.primary" onClick={handleTitleClick} sx={{ flexGrow: 1, fontSize: "1rem" }}>
+              <Typography component="div" color="text.primary" sx={{ flexGrow: 1, fontSize: "1rem" }}>
                 <Link to={'/'}>
                     <b>Scrap</b>
 

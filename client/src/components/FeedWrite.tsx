@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { FeedInput } from './Feed'
 
@@ -21,7 +21,7 @@ import { AlertDialog } from "./Alert";
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
 function FeedWrite() {
-    const [backdropOpen, setBackdropOpen] = React.useState(false);
+    const [backdropOpen, setBackdropOpen] = useState(false);
     const [recognizeText, setRecognizeText] = useState('')    
     const [alertDialogTrigger, setAlertDialogTrigger] = useState(0)
 
@@ -32,6 +32,8 @@ function FeedWrite() {
     const [listState, setListState] = React.useState({
         bottom: false
     });
+    
+
     
     const toggleDrawer =
     (anchor: Anchor, open: boolean) =>
@@ -56,14 +58,14 @@ function FeedWrite() {
           onKeyDown={toggleDrawer(anchor, false)}
         >
 
-            <TakePicture setRecognizeText={setRecognizeText} setBackdropOpen={setBackdropOpen} setImageFile={setImageFile} setImageFileUrl={setImageFileUrl}></TakePicture>
+            <ListButton onClick={handleClickButton}>이미지 가져오기</ListButton>
             <ListButton>수동으로 입력</ListButton>
 
         </Box>
     );
 
     const handleCropButtonClick = async () => {
-        console.log(cropImageCanvas)
+        setAlertDialogTrigger( -1 )
 
         const blobImageObject: any = await new Promise((resolve, reject) => {
             cropImageCanvas.toBlob((blob) => {
@@ -73,21 +75,14 @@ function FeedWrite() {
                 }
                 blob.name = 'a.jpg';
     
-                console.log(blob)
                 setBackdropOpen(true)
-                setAlertDialogTrigger( -1 )
 
                 resolve(blob)
-    
 
-    
             }, 'image/jpeg');
         })
 
-
-
         const blobImage = new File([blobImageObject], blobImageObject.name, { type: blobImageObject.type });
-        console.log(blobImage)
     
         const formData = new FormData();
         formData.append("file", blobImage);
@@ -99,7 +94,52 @@ function FeedWrite() {
         setRecognizeText(response.data)
     }
 
-      
+    const getFile = async (): Promise<any> => {
+        const getFileObject = await new Promise((response, reject): any => {
+            let input = document.createElement('input');
+            input.type = 'file';
+            input.setAttribute('accept', 'image/*')
+
+            // input.onchange = (e: any) => { 
+
+            // }
+
+            console.log(input)
+
+            input.addEventListener("change", (e: any) => {
+                let file = e.target.files[0]; 
+                let objectURL = window.URL.createObjectURL(file);
+                console.log(e)
+
+                // setBackdropOpen(true)
+
+    
+                response({
+                    object: file,
+                    url: objectURL
+                })
+            });
+    
+            input.click();
+        })
+
+        return getFileObject
+    }
+
+
+
+    const handleClickButton = async () => {
+        const file = await getFile()
+
+        setImageFile(file.object)
+        setImageFileUrl(file.url)
+
+        setAlertDialogTrigger(1 + Math.random()) 
+
+
+    }
+
+
     useEffect(() => {
         setListState({ ...listState, bottom: true });
     }, [])
@@ -107,15 +147,14 @@ function FeedWrite() {
     useEffect(() => {
         if (recognizeText != '') {
             setBackdropOpen(false);
-
         }
     }, [recognizeText])
 
-    useEffect(() => {
-        if (imageFileUrl != '') {
-            setAlertDialogTrigger( alertDialogTrigger + 1 )
-        }
-    }, [imageFileUrl])
+    // useEffect(() => {
+    //     if (imageFileUrl != '') {
+    //         setAlertDialogTrigger( alertDialogTrigger + 1 )
+    //     }
+    // }, [imageFileUrl])
 
     return (
         <CheckSignin>
@@ -164,50 +203,6 @@ function FeedWrite() {
 
 }
 
-function TakePicture({ setRecognizeText, setBackdropOpen, setImageFile, setImageFileUrl }) {
-
-    const getFile = async (): Promise<any> => {
-        const getFileObject = await new Promise((response, reject): any => {
-            let input = document.createElement('input');
-            input.type = 'file';
-    
-            input.onchange = (e: any) => { 
-                console.log("file", e)
-
-                let file = e.target.files[0]; 
-                let objectURL = window.URL.createObjectURL(file);
-                // setBackdropOpen(true)
-
-    
-                response({
-                    object: file,
-                    url: objectURL
-                })
-            }
-    
-            input.click();
-        })
-
-        console.log("getFileObject", getFileObject)
-
-        return getFileObject
-
-    }
-
-    const handleClickButton = async () => {
-        const file = await getFile()
-
-        setImageFile(file.object)
-        setImageFileUrl(file.url)
-    }
-
-
-    return (
-        <Box>
-            <ListButton onClick={handleClickButton}>이미지 가져오기</ListButton>
-        </Box>
-    )
-}
 
 
 function BackdropProgress({ isOpen }) {
