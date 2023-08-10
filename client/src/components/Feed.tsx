@@ -35,12 +35,16 @@ function Feed() {
             }, 1000);
         }
     }
+
+    useEffect(() => {
+        dispatch(clear({}))
+
+    }, [])
     
 
     useEffect(() => {
         if (!fetchingStop) {
             const loadFeedData = async () => {
-                dispatch(clear({}))
 
                 let getFeeds = await FeedAPI.getFeed(fetching, {
                     isrange: 'true',
