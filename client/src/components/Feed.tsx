@@ -156,9 +156,9 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
 
         setAlertSuccessTrigger(alertSuccessTrigger + 1)
 
-        setTimeout(() => {
-            patchFeed()
-        }, 500)
+        // setTimeout(() => {
+        //     patchFeed()
+        // }, 500)
     }
 
     const patchFeed = async () => {
