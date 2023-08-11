@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Stack, Grid, Card, CardContent, Typography, Box, Skeleton, IconButton, Avatar, Menu, MenuItem, InputAdornment } from '@mui/material';
+import { TextField, Button, Stack, Grid, Card, CardContent, Typography, Box, Skeleton, IconButton, Avatar, Menu, MenuItem, InputAdornment, List, ListSubheader, Autocomplete } from '@mui/material';
 import { Popup, AlertDialog } from './Alert'
 import { useDispatch, useSelector } from 'react-redux';
 import { push, unshift, remove, clear } from '../features/feedSlice';
 import { Link } from "react-router-dom"
-import { FeedAPI } from "../api";
+import { FeedAPI, BookAPI } from "../api";
 
 import SendIcon from '@mui/icons-material/Send';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -137,6 +137,8 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     const [alertTrigger, setAlertTrigger] = useState(0)
     const [alertSuccessTrigger, setAlertSuccessTrigger] = useState(0)
 
+    const [quotationOptions, setQuotationOptions] = useState(['The Godfather', 'Pulp Fiction'])
+
     
 
     const handleChange = (e) => {
@@ -145,6 +147,10 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
           ...inputs,
           [name]: value
         });
+
+        if (name == 'quotationOrigin') {
+            patchBooks()
+        }
     }
 
     const handleClick = () => {
@@ -174,6 +180,25 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         // setTimeout(() => {
         //     patchFeed()
         // }, 500)
+    }
+
+    const handleQuotationSelectChange = (e, values) => {
+        setInputs({
+            ...inputs,
+            ['quotationOrigin']: values
+        });
+    }
+
+    const patchBooks = async () => {
+        const response = await BookAPI.get({
+            title: inputs.quotationOrigin
+        })
+
+        const bookArray = response.books.map(book => {
+            return book.title
+        })
+
+        setQuotationOptions(bookArray)
     }
 
     const patchFeed = async () => {
@@ -206,15 +231,14 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     return (
         <Box>
             <Stack sx={{ marginTop: "1rem", marginBottom: "2rem" }} spacing={1}>
-                <TextField
-                    id="outlined-textarea"
-                    label="인용구 출처"
-                    name="quotationOrigin"
-                    placeholder="예) 도서명, 사람 이름" 
-                    onChange={handleChange} 
-                    value={quotationOrigin}
-                    variant="filled"
+                <Autocomplete
+                    freeSolo
+                    disablePortal
+                    options={quotationOptions}
+                    onChange={handleQuotationSelectChange}
 
+                    sx={{ width: '100%' }}
+                    renderInput={(params) => <TextField {...params} onChange={handleChange} value={quotationOrigin} name="quotationOrigin" placeholder="예) 도서명, 사람 이름" variant="filled" label="인용구 출처" />}
                 />
 
 
@@ -254,9 +278,18 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
 
 
 // function FeedQuotaionSearch({ title }) {
+//     const options = ['The Godfather', 'Pulp Fiction'];
 
+
+//     // useEffect(() => {
+//     //     BookAPI.get({
+//     //         title: title
+//     //     })
+//     // }, [])
 
 //     return (
+
+
 
 //     )
 // }
