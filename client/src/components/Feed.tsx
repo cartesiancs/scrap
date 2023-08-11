@@ -253,6 +253,14 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
 }
 
 
+// function FeedQuotaionSearch({ title }) {
+
+
+//     return (
+
+//     )
+// }
+
 function ToggleInput({ children, title }) {
     const [activate, setActivate] = useState(false)
 
@@ -355,9 +363,14 @@ function FeedBody({ feed, isShowUsername = true }) {
 
 
 
-            <Box sx={{ fontSize: 14, padding: '1rem', whiteSpace: 'pre-line', wordWrap: 'break-word' }} color="text.secondary">
-                {feed.thought}
-            </Box>
+            {feed.thought == '' ? (
+                <></>
+            ) : (
+                <Box sx={{ fontSize: 14, padding: '1rem', whiteSpace: 'pre-line', wordWrap: 'break-word' }} color="text.secondary">
+                    {feed.thought}
+                </Box>
+            )}
+
 
 
         </Box>

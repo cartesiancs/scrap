@@ -235,4 +235,20 @@ const OcrAPI = {
     }
 }
 
-export { FeedAPI, AuthAPI, UserAPI, OauthAPI, OcrAPI }
+const BookAPI = {
+    async get({ title }) {
+        let response = await axios.request({
+            method: 'get',
+            url: `/api/book/${title}`,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            responseType: 'json'
+        })
+    
+        return response.data
+    },
+}
+
+
+export { FeedAPI, AuthAPI, UserAPI, OauthAPI, OcrAPI, BookAPI }
