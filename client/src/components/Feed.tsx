@@ -59,13 +59,17 @@ function Feed() {
 
                 for (let index = 0; index < getFeeds.data.result.length; index++) {
                     const element = getFeeds.data.result[index];
-    
+
+                    const isQuotationNull = element.quotation == null
+                    const quotation = isQuotationNull ? null : {
+                        ...element.quotation
+                    }
                     
                     dispatch(push({
                         idx: element.idx, 
                         thought: element.thought,
                         quotationText: element.quotationText,
-                        quotationOrigin: element.quotationOrigin,
+                        quotation: quotation,
                         owner: element.owner, 
                         date: element.date, 
                         type: element.type, 
@@ -315,7 +319,7 @@ function FeedBody({ feed, isShowUsername = true }) {
                     <Box sx={{fontSize: 18, ...typographyStyle}} color="text.secondary">
                         {feed.quotationText}
                         <br /> 
-                        <Typography sx={{ fontSize: "0.9rem", marginTop: '1.3rem', fontFamily: 'Gowun Batang' }}>_{feed.quotationOrigin}</Typography>
+                        <Typography sx={{ fontSize: "0.9rem", marginTop: '1.3rem', fontFamily: 'Gowun Batang' }}>_<FeedQuotation quotation={feed.quotation}></FeedQuotation></Typography>
                         
         
                     </Box>
@@ -343,7 +347,7 @@ function FeedBody({ feed, isShowUsername = true }) {
                 <Box sx={{fontSize: 18, ...typographyStyle}} color="text.secondary">
                     {feed.quotationText}
                     <br /> 
-                    <Typography sx={{ fontSize: "0.9rem", marginTop: '1.3rem', fontFamily: 'Gowun Batang' }}>_{feed.quotationOrigin}</Typography>
+                    <Typography sx={{ fontSize: "0.9rem", marginTop: '1.3rem', fontFamily: 'Gowun Batang' }}>_<FeedQuotation quotation={feed.quotation}></FeedQuotation></Typography>
                     
     
                 </Box>
@@ -357,6 +361,21 @@ function FeedBody({ feed, isShowUsername = true }) {
 
 
         </Box>
+    )
+}
+
+
+function FeedQuotation({ quotation }: any) {
+    if (quotation == null) {
+        return (
+            '출처 없음'
+        )
+    }
+    return (
+        <>
+        {quotation.title}
+        </>
+        
     )
 }
 

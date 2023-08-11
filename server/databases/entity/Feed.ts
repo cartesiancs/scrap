@@ -17,9 +17,8 @@ export class Feed {
     @Column({ type: "varchar", length: 1000 })
     quotationText: string;
 
-
     @ManyToOne((type) => Quotation, (quotation) => quotation.feeds)
-    quotationUUID: Quotation
+    quotation: Quotation
 
     // @Column({ type: "varchar", length: 200 })
     // quotationOrigin: string;

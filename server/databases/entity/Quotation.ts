@@ -8,7 +8,7 @@ export class Quotation {
     @PrimaryColumn({ type: "varchar", length: 36 })
     uuid: string;
 
-    @OneToMany((type) => Feed, (feed) => feed.quotationUUID)
+    @OneToMany((type) => Feed, (feed) => feed.quotation)
     feeds: Feed[]
 
     @Column({ type: "varchar", length: 40 })

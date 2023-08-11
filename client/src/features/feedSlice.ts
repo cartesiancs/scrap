@@ -5,7 +5,7 @@ type FeedObject = {
     idx: number
     thought: string,
     quotationText: string,
-    quotationOrigin: string,
+    quotation: any
     owner: string
     date: string
     type: number
@@ -16,7 +16,7 @@ type state = {
 }
 
 const initialState: state = {
-    feeds: [{idx: 0, thought:'', quotationText:'', quotationOrigin:'', owner: '', date: '', type: 0}]
+    feeds: [{idx: 0, thought:'', quotationText:'', quotation: null, owner: '', date: '', type: 0}]
 }
 
 const feedSlice = createSlice({
@@ -30,7 +30,7 @@ const feedSlice = createSlice({
             state.feeds.unshift(action.payload)
         },
         clear(state, action) {
-            state.feeds = [{idx: 0, thought:'', quotationText:'', quotationOrigin:'', owner: '', date: '', type: 0}]
+            state.feeds = [{idx: 0, thought:'', quotationText:'', quotation: null, owner: '', date: '', type: 0}]
         },
         remove(state, action) {
             const feedWithIdx = state.feeds.findIndex((obj) => obj.idx === action.payload.idx);
