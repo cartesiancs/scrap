@@ -156,7 +156,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         FeedAPI.insertFeed({
             thought: thought,
             quotationText: quotationText,
-            quotationOrigin: quotationOrigin
+            quotationTitle: quotationOrigin
         })
         
         setInputs({

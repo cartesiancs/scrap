@@ -50,7 +50,7 @@ const FeedAPI = {
         return response.data
     },
     
-    async insertFeed({ thought, quotationText, quotationOrigin }) {
+    async insertFeed({ thought, quotationText, quotationTitle }) {
         let token = Cookies.get("user")
     
         let response = await axios.request({
@@ -59,7 +59,7 @@ const FeedAPI = {
             data: {
                 thought: thought,
                 quotationText: quotationText,
-                quotationOrigin: quotationOrigin
+                quotationTitle: quotationTitle
             },
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",

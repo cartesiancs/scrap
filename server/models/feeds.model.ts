@@ -67,7 +67,7 @@ const feedModel = {
         }
     },
 
-    insert: async function ({ thought, quotationText, quotationOrigin, owner, date, type }) {
+    insert: async function ({ thought, quotationText, quotationUUID, owner, date, type }) {
         try {
             const feedRepository = AppDataSource.getRepository(Feed);
             const insertFeed = await feedRepository.createQueryBuilder()
@@ -77,7 +77,7 @@ const feedModel = {
                     { 
                         thought: thought, 
                         quotationText: quotationText,
-                        quotationOrigin: quotationOrigin,
+                        quotationUUID: quotationUUID,
                         owner: owner, 
                         date: date, 
                         type: type 
