@@ -11,7 +11,7 @@ export class Quotation {
     @OneToMany((type) => Feed, (feed) => feed.quotation)
     feeds: Feed[]
 
-    @Column({ type: "varchar", length: 40 })
+    @Column({ type: "varchar", length: 100 })
     title: string;
 
     @Column({ type: "varchar", length: 400 })

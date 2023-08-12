@@ -140,6 +140,24 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     const [quotationOptions, setQuotationOptions] = useState(['The Godfather', 'Pulp Fiction'])
 
     
+    const [countDelay, setCountDelay] = useState(3);
+
+    useEffect(() => {
+      const id = setInterval(() => {
+        setCountDelay(countDelay => countDelay - 1);
+      }, 1000);
+      return () => clearInterval(id);
+    }, []);
+
+    useEffect(() => {
+        intervalPatchBook()
+    }, [countDelay])
+
+    const intervalPatchBook = () => {
+        if (countDelay == 0 && inputs.quotationOrigin != '') {
+            patchBooks()
+        }
+    }
 
     const handleChange = (e) => {
         const { value, name } = e.target;
@@ -149,7 +167,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         });
 
         if (name == 'quotationOrigin') {
-            patchBooks()
+            setCountDelay(3)
         }
     }
 
@@ -190,6 +208,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     }
 
     const patchBooks = async () => {
+
         const response = await BookAPI.get({
             title: inputs.quotationOrigin
         })
