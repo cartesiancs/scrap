@@ -1,10 +1,13 @@
 
 
 import { feedModel } from '../models/feeds.model.js';
+import { quotationModel } from '../models/quotation.model.js';
+
 
 import { userService } from '../services/users.serv.js'
 import sanitizeHtml from 'sanitize-html';
 import dayjs from 'dayjs';
+import { v4 as uuidv4 } from 'uuid';
 
 
 
@@ -53,9 +56,19 @@ const feedController = {
     
         let getUserId = await userService.transformTokentoUserid({ token: token });
 
+        console.log(req.body.quotation)
+
         let thought = sanitizeHtml(req.body.thought);
         let quotationText = sanitizeHtml(req.body.quotationText);
-        let quotationOrigin = sanitizeHtml(req.body.quotationOrigin);
+        let quotationTitle = sanitizeHtml(req.body.quotationTitle);
+        let quotationDescription = sanitizeHtml(req.body.quotation.description);
+        let quotationAuthor = sanitizeHtml(req.body.quotation.author);
+        let quotationPublishYear = sanitizeHtml(req.body.quotation.publishYear);
+        let quotationCoverImage = sanitizeHtml(req.body.quotation.coverImage);
+        let quotationUrl = sanitizeHtml(req.body.quotation.url);
+        let quotationType = Number(sanitizeHtml(req.body.quotation.type));
+
+        let quotationUUID = uuidv4()
 
         let owner = getUserId.userId
         let date = now.format("YYYY.MM.DD.HH.mm.ss"); 
@@ -65,7 +78,18 @@ const feedController = {
             return res.status(401).json({status:0})
         }
 
-        let data: any = await feedModel.insert({ thought: thought, quotationText: quotationText, quotationOrigin: quotationOrigin, owner: owner, date: date, type: type })
+        await quotationModel.create({
+            uuid: quotationUUID,
+            title: quotationTitle,
+            description: quotationDescription,
+            author: quotationAuthor,
+            publishYear: quotationPublishYear,
+            coverImage: quotationCoverImage,
+            url: quotationUrl,
+            type: quotationType
+        })
+
+        let data: any = await feedModel.insert({ thought: thought, quotationText: quotationText, quotationUUID: quotationUUID, owner: owner, date: date, type: type })
     
         if (data.status == 1) {
             res.status(200).json({status:1})

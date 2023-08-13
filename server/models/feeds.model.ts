@@ -23,7 +23,10 @@ const feedModel = {
             .offset(idxStart)
             .orderBy("feed.date", order)
             .leftJoin("feed.owner", "user")
+            .leftJoin("feed.quotation", "quotation")
             .addSelect(['user.userId', 'user.userAuthLevel', 'user.userDisplayName'])
+            .addSelect(['quotation.title', 'quotation.description', 'quotation.author', 'quotation.publishYear', 'quotation.coverImage', 'quotation.url', 'quotation.type'])
+
             .getMany()
     
             return { status: 1, result: getFeed }
@@ -55,7 +58,9 @@ const feedModel = {
             const getFeed = await feedRepository.createQueryBuilder('feed')
             .orderBy("feed.date", "DESC")
             .leftJoin("feed.owner", "user")
+            .leftJoin("feed.quotation", "quotation")
             .addSelect(['user.userId', 'user.userAuthLevel', 'user.userDisplayName'])
+            .addSelect(['quotation.title', 'quotation.description', 'quotation.author', 'quotation.publishYear', 'quotation.coverImage', 'quotation.url', 'quotation.type'])
             .where(where, setData)
             .getMany()
 
@@ -67,7 +72,7 @@ const feedModel = {
         }
     },
 
-    insert: async function ({ thought, quotationText, quotationOrigin, owner, date, type }) {
+    insert: async function ({ thought, quotationText, quotationUUID, owner, date, type }) {
         try {
             const feedRepository = AppDataSource.getRepository(Feed);
             const insertFeed = await feedRepository.createQueryBuilder()
@@ -77,7 +82,7 @@ const feedModel = {
                     { 
                         thought: thought, 
                         quotationText: quotationText,
-                        quotationOrigin: quotationOrigin,
+                        quotation: quotationUUID,
                         owner: owner, 
                         date: date, 
                         type: type 

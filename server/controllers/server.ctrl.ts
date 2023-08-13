@@ -1,7 +1,4 @@
 
-
-
-
 const serverController = {
     get: async function (req, res) {
 

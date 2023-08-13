@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Stack, Grid, Card, CardContent, Typography, Box, Skeleton, IconButton, Avatar, Menu, MenuItem, InputAdornment } from '@mui/material';
+import { TextField, Button, Stack, Grid, Card, CardContent, Typography, Box, Skeleton, IconButton, Avatar, Menu, MenuItem, InputAdornment, List, ListSubheader, Autocomplete } from '@mui/material';
 import { Popup, AlertDialog } from './Alert'
 import { useDispatch, useSelector } from 'react-redux';
 import { push, unshift, remove, clear } from '../features/feedSlice';
 import { Link } from "react-router-dom"
-import { FeedAPI } from "../api";
+import { FeedAPI, BookAPI } from "../api";
 
 import SendIcon from '@mui/icons-material/Send';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -59,13 +59,17 @@ function Feed() {
 
                 for (let index = 0; index < getFeeds.data.result.length; index++) {
                     const element = getFeeds.data.result[index];
-    
+
+                    const isQuotationNull = element.quotation == null
+                    const quotation = isQuotationNull ? null : {
+                        ...element.quotation
+                    }
                     
                     dispatch(push({
                         idx: element.idx, 
                         thought: element.thought,
                         quotationText: element.quotationText,
-                        quotationOrigin: element.quotationOrigin,
+                        quotation: quotation,
                         owner: element.owner, 
                         date: element.date, 
                         type: element.type, 
@@ -125,7 +129,15 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     const [inputs, setInputs] = useState({
         thought: '',
         quotationText: '',
-        quotationOrigin: ''
+        quotationOrigin: '',
+        quotation: {
+            description: '1',
+            author: 'vfd',
+            publishYear: '',
+            coverImage: '',
+            url: '',
+            type: 0
+        }
     })
 
     const { thought, quotationText, quotationOrigin } = inputs
@@ -133,7 +145,27 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     const [alertTrigger, setAlertTrigger] = useState(0)
     const [alertSuccessTrigger, setAlertSuccessTrigger] = useState(0)
 
+    const [quotationOptions, setQuotationOptions] = useState([])
+
     
+    const [countDelay, setCountDelay] = useState(3);
+
+    useEffect(() => {
+      const id = setInterval(() => {
+        setCountDelay(countDelay => countDelay - 1);
+      }, 1000);
+      return () => clearInterval(id);
+    }, []);
+
+    useEffect(() => {
+        intervalPatchBook()
+    }, [countDelay])
+
+    const intervalPatchBook = () => {
+        if (countDelay == 0 && inputs.quotationOrigin != '') {
+            patchBooks()
+        }
+    }
 
     const handleChange = (e) => {
         const { value, name } = e.target;
@@ -141,6 +173,10 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
           ...inputs,
           [name]: value
         });
+
+        if (name == 'quotationOrigin') {
+            setCountDelay(3)
+        }
     }
 
     const handleClick = () => {
@@ -156,13 +192,29 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         FeedAPI.insertFeed({
             thought: thought,
             quotationText: quotationText,
-            quotationOrigin: quotationOrigin
+            quotationTitle: quotationOrigin,
+            quotation: {
+                description: inputs.quotation.description,
+                author: inputs.quotation.author,
+                publishYear: inputs.quotation.publishYear,
+                coverImage: inputs.quotation.coverImage,
+                url: inputs.quotation.url,
+                type: 1
+            }
         })
         
         setInputs({
             thought: '',
             quotationText: '',
-            quotationOrigin: ''
+            quotationOrigin: '',
+            quotation: {
+                description: '',
+                author: '',
+                publishYear: '',
+                coverImage: '',
+                url: '',
+                type: 0
+            }
         })
 
         setAlertSuccessTrigger(alertSuccessTrigger + 1)
@@ -170,6 +222,44 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         // setTimeout(() => {
         //     patchFeed()
         // }, 500)
+    }
+
+    const handleQuotationSelectChange = (e, values) => {
+        console.log(values)
+        setInputs({
+            ...inputs,
+            quotationOrigin: values.label,
+            quotation: {
+                description: values.description,
+                author: values.author,
+                publishYear: values.publishYear,
+                coverImage: values.coverImage,
+                url: values.url,
+                type: values.type,
+            }
+
+        });
+    }
+
+    const patchBooks = async () => {
+
+        const response = await BookAPI.get({
+            title: inputs.quotationOrigin
+        })
+
+        const bookArray = response.books.map(book => {
+            return {
+                label: book.title,
+                author: book.author[0],
+                coverImage: book.coverImage,
+                description: book.description,
+                publishYear: book.publishYear.substr(0, 4),
+                url: book.url,
+                type: 1
+            }
+        })
+
+        setQuotationOptions(bookArray)
     }
 
     const patchFeed = async () => {
@@ -202,15 +292,14 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     return (
         <Box>
             <Stack sx={{ marginTop: "1rem", marginBottom: "2rem" }} spacing={1}>
-                <TextField
-                    id="outlined-textarea"
-                    label="인용구 출처"
-                    name="quotationOrigin"
-                    placeholder="예) 도서명, 사람 이름" 
-                    onChange={handleChange} 
-                    value={quotationOrigin}
-                    variant="filled"
+                <Autocomplete
+                    freeSolo
+                    disablePortal
+                    options={quotationOptions}
+                    onChange={handleQuotationSelectChange}
 
+                    sx={{ width: '100%' }}
+                    renderInput={(params) => <TextField {...params} onChange={handleChange} value={quotationOrigin} name="quotationOrigin" placeholder="예) 도서명, 사람 이름" variant="filled" label="인용구 출처" />}
                 />
 
 
@@ -248,6 +337,23 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     );
 }
 
+
+// function FeedQuotaionSearch({ title }) {
+//     const options = ['The Godfather', 'Pulp Fiction'];
+
+
+//     // useEffect(() => {
+//     //     BookAPI.get({
+//     //         title: title
+//     //     })
+//     // }, [])
+
+//     return (
+
+
+
+//     )
+// }
 
 function ToggleInput({ children, title }) {
     const [activate, setActivate] = useState(false)
@@ -315,7 +421,7 @@ function FeedBody({ feed, isShowUsername = true }) {
                     <Box sx={{fontSize: 18, ...typographyStyle}} color="text.secondary">
                         {feed.quotationText}
                         <br /> 
-                        <Typography sx={{ fontSize: "0.9rem", marginTop: '1.3rem', fontFamily: 'Gowun Batang' }}>_{feed.quotationOrigin}</Typography>
+                        <Typography sx={{ fontSize: "0.9rem", marginTop: '1.3rem', fontFamily: 'Gowun Batang' }}>_<FeedQuotation quotation={feed.quotation}></FeedQuotation></Typography>
                         
         
                     </Box>
@@ -343,7 +449,7 @@ function FeedBody({ feed, isShowUsername = true }) {
                 <Box sx={{fontSize: 18, ...typographyStyle}} color="text.secondary">
                     {feed.quotationText}
                     <br /> 
-                    <Typography sx={{ fontSize: "0.9rem", marginTop: '1.3rem', fontFamily: 'Gowun Batang' }}>_{feed.quotationOrigin}</Typography>
+                    <Typography sx={{ fontSize: "0.9rem", marginTop: '1.3rem', fontFamily: 'Gowun Batang' }}>_<FeedQuotation quotation={feed.quotation}></FeedQuotation></Typography>
                     
     
                 </Box>
@@ -351,12 +457,32 @@ function FeedBody({ feed, isShowUsername = true }) {
 
 
 
-            <Box sx={{ fontSize: 14, padding: '1rem', whiteSpace: 'pre-line', wordWrap: 'break-word' }} color="text.secondary">
-                {feed.thought}
-            </Box>
+            {feed.thought == '' ? (
+                <></>
+            ) : (
+                <Box sx={{ fontSize: 14, padding: '1rem', whiteSpace: 'pre-line', wordWrap: 'break-word' }} color="text.secondary">
+                    {feed.thought}
+                </Box>
+            )}
+
 
 
         </Box>
+    )
+}
+
+
+function FeedQuotation({ quotation }: any) {
+    if (quotation == null) {
+        return (
+            '출처 없음'
+        )
+    }
+    return (
+        <>
+        {quotation.title}
+        </>
+        
     )
 }
 

@@ -50,7 +50,7 @@ const FeedAPI = {
         return response.data
     },
     
-    async insertFeed({ thought, quotationText, quotationOrigin }) {
+    async insertFeed({ thought, quotationText, quotationTitle, quotation: { description, author, publishYear, coverImage, url, type} }) {
         let token = Cookies.get("user")
     
         let response = await axios.request({
@@ -59,7 +59,15 @@ const FeedAPI = {
             data: {
                 thought: thought,
                 quotationText: quotationText,
-                quotationOrigin: quotationOrigin
+                quotationTitle: quotationTitle,
+                quotation: { 
+                    description: description, 
+                    author: author, 
+                    publishYear: publishYear, 
+                    coverImage: coverImage, 
+                    url: url, 
+                    type: type 
+                } 
             },
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
@@ -235,4 +243,20 @@ const OcrAPI = {
     }
 }
 
-export { FeedAPI, AuthAPI, UserAPI, OauthAPI, OcrAPI }
+const BookAPI = {
+    async get({ title }) {
+        let response = await axios.request({
+            method: 'get',
+            url: `/api/book/${title}`,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            responseType: 'json'
+        })
+    
+        return response.data
+    },
+}
+
+
+export { FeedAPI, AuthAPI, UserAPI, OauthAPI, OcrAPI, BookAPI }
