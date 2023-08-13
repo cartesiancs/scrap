@@ -129,7 +129,15 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     const [inputs, setInputs] = useState({
         thought: '',
         quotationText: '',
-        quotationOrigin: ''
+        quotationOrigin: '',
+        quotation: {
+            description: '1',
+            author: 'vfd',
+            publishYear: '',
+            coverImage: '',
+            url: '',
+            type: 0
+        }
     })
 
     const { thought, quotationText, quotationOrigin } = inputs
@@ -137,7 +145,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     const [alertTrigger, setAlertTrigger] = useState(0)
     const [alertSuccessTrigger, setAlertSuccessTrigger] = useState(0)
 
-    const [quotationOptions, setQuotationOptions] = useState(['The Godfather', 'Pulp Fiction'])
+    const [quotationOptions, setQuotationOptions] = useState([])
 
     
     const [countDelay, setCountDelay] = useState(3);
@@ -184,13 +192,29 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         FeedAPI.insertFeed({
             thought: thought,
             quotationText: quotationText,
-            quotationTitle: quotationOrigin
+            quotationTitle: quotationOrigin,
+            quotation: {
+                description: inputs.quotation.description,
+                author: inputs.quotation.author,
+                publishYear: inputs.quotation.publishYear,
+                coverImage: inputs.quotation.coverImage,
+                url: inputs.quotation.url,
+                type: 1
+            }
         })
         
         setInputs({
             thought: '',
             quotationText: '',
-            quotationOrigin: ''
+            quotationOrigin: '',
+            quotation: {
+                description: '',
+                author: '',
+                publishYear: '',
+                coverImage: '',
+                url: '',
+                type: 0
+            }
         })
 
         setAlertSuccessTrigger(alertSuccessTrigger + 1)
@@ -201,9 +225,19 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     }
 
     const handleQuotationSelectChange = (e, values) => {
+        console.log(values)
         setInputs({
             ...inputs,
-            ['quotationOrigin']: values
+            quotationOrigin: values.label,
+            quotation: {
+                description: values.description,
+                author: values.author,
+                publishYear: values.publishYear,
+                coverImage: values.coverImage,
+                url: values.url,
+                type: values.type,
+            }
+
         });
     }
 
@@ -214,7 +248,15 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         })
 
         const bookArray = response.books.map(book => {
-            return book.title
+            return {
+                label: book.title,
+                author: book.author[0],
+                coverImage: book.coverImage,
+                description: book.description,
+                publishYear: book.publishYear.substr(0, 4),
+                url: book.url,
+                type: 1
+            }
         })
 
         setQuotationOptions(bookArray)

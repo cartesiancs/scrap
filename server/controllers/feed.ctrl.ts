@@ -56,9 +56,17 @@ const feedController = {
     
         let getUserId = await userService.transformTokentoUserid({ token: token });
 
+        console.log(req.body.quotation)
+
         let thought = sanitizeHtml(req.body.thought);
         let quotationText = sanitizeHtml(req.body.quotationText);
         let quotationTitle = sanitizeHtml(req.body.quotationTitle);
+        let quotationDescription = sanitizeHtml(req.body.quotation.description);
+        let quotationAuthor = sanitizeHtml(req.body.quotation.author);
+        let quotationPublishYear = sanitizeHtml(req.body.quotation.publishYear);
+        let quotationCoverImage = sanitizeHtml(req.body.quotation.coverImage);
+        let quotationUrl = sanitizeHtml(req.body.quotation.url);
+        let quotationType = Number(sanitizeHtml(req.body.quotation.type));
 
         let quotationUUID = uuidv4()
 
@@ -73,14 +81,14 @@ const feedController = {
         await quotationModel.create({
             uuid: quotationUUID,
             title: quotationTitle,
-            description: '',
-            author: '',
-            publishYear: '',
-            coverImage: '',
-            url: '',
-            type: 1
+            description: quotationDescription,
+            author: quotationAuthor,
+            publishYear: quotationPublishYear,
+            coverImage: quotationCoverImage,
+            url: quotationUrl,
+            type: quotationType
         })
-        
+
         let data: any = await feedModel.insert({ thought: thought, quotationText: quotationText, quotationUUID: quotationUUID, owner: owner, date: date, type: type })
     
         if (data.status == 1) {
