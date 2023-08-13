@@ -32,6 +32,8 @@ function FeedWrite() {
     const [listState, setListState] = React.useState({
         bottom: false
     });
+
+    const fileUpload: any = useRef()
     
 
     
@@ -94,8 +96,8 @@ function FeedWrite() {
         setRecognizeText(response.data)
     }
 
-    const getFile = async (): Promise<any> => {
-        const getFileObject = await new Promise((response, reject): any => {
+    const getFile = () => {
+        const getFileObject = new Promise((response, reject): any => {
             let input = document.createElement('input');
             input.type = 'file';
             input.setAttribute('accept', 'image/*')
@@ -129,14 +131,26 @@ function FeedWrite() {
 
 
     const handleClickButton = async () => {
-        const file = await getFile()
-
-        setImageFile(file.object)
-        setImageFileUrl(file.url)
-
-        setAlertDialogTrigger(1 + Math.random()) 
 
 
+        fileUpload.current.onchange = (e: any) => {
+            let file = e.target.files[0]; 
+            let objectURL = window.URL.createObjectURL(file);
+
+            const result = {
+                object: file,
+                url: objectURL
+            }
+
+
+            setImageFile(result.object)
+            setImageFileUrl(result.url)
+
+            setAlertDialogTrigger(1 + Math.random()) 
+        }
+
+
+        fileUpload.current.click();
     }
 
 
@@ -175,6 +189,9 @@ function FeedWrite() {
             <Box sx={{ marginTop: '5rem', marginBottom: '5rem', display: listState.bottom ? 'none' : 'block' }}>
                 <FeedInput defaultQuotationText={recognizeText}></FeedInput>
             </Box>
+
+            <input type="file" id="fileUpload" ref={fileUpload} accept='image/*' style={{ display: 'none' }} />
+
 
             <br />
 
