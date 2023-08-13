@@ -495,14 +495,14 @@ function FeedProfile({ feed }) {
         <Box sx={{ flexGrow: 1, overflow: 'hidden', marginBottom: "1rem", alignContent: 'center' }}>
             <Grid container wrap="nowrap" spacing={2} sx={{ alignContent: 'center', alignItems: 'center' }}>
                 <Grid item>
-                    <Link to={'/user/' + feed.owner.userId}>
+                    <Link to={'/@' + feed.owner.userId}>
                         <Avatar sx={{ width: '2rem', height: '2rem', fontSize: '1rem' }}>{feed.owner.userDisplayName.slice(0, 1)}</Avatar>
 
                     </Link>
                 </Grid>
 
                 <Grid item xs zeroMinWidth sx={{ alignContent: 'center'}}>
-                <Link to={'/user/' + feed.owner.userId}>
+                <Link to={'/@' + feed.owner.userId}>
                 <Typography sx={{ fontSize: '1rem' }} noWrap>{feed.owner.userDisplayName}</Typography>
 
                 </Link>
