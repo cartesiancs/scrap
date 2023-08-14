@@ -29,7 +29,7 @@ export async function init (app) {
                 "default-src": [ "'self'"],
                 "connect-src": ["localhost:*", "*.scrap.devent.kr", , "scrap.devent.kr", "192.168.0.62:*"],
                 "script-src": ["'self'", "*.jsdelivr.net", '*.scrap.devent.kr', "'unsafe-inline'", "'unsafe-eval'"],
-                'img-src': ["'self'", 'data:', 'blob:'],
+                'img-src': ["'self'", 'data:', 'blob:', '*.daumcdn.net', '*.kakaocdn.net'],
 
             },
         },
