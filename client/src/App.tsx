@@ -61,7 +61,7 @@ const App = () => {
                             />
 
                             <Route path="/feed/*" component={ContentPage} />
-                            <Route path="/user/*" component={ProfilePage} />
+                            <Route path="/@*" component={ProfilePage} />
                             <Route path="/search/*" component={FeedSearchPage} />
 
 

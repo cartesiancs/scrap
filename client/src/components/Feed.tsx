@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Stack, Grid, Card, CardContent, Typography, Box, Skeleton, IconButton, Avatar, Menu, MenuItem, InputAdornment, List, ListSubheader, Autocomplete } from '@mui/material';
+import { TextField, Button, Stack, Grid, Card, CardContent, Typography, Box, Skeleton, IconButton, Avatar, Menu, MenuItem, InputAdornment, List, ListSubheader, Autocomplete, CircularProgress } from '@mui/material';
 import { Popup, AlertDialog } from './Alert'
 import { useDispatch, useSelector } from 'react-redux';
 import { push, unshift, remove, clear } from '../features/feedSlice';
@@ -146,6 +146,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
     const [alertSuccessTrigger, setAlertSuccessTrigger] = useState(0)
 
     const [quotationOptions, setQuotationOptions] = useState([])
+    const [openQuotationOptions, setOpenQuotationOptions] = useState(false);
 
     
     const [countDelay, setCountDelay] = useState(3);
@@ -176,6 +177,11 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
 
         if (name == 'quotationOrigin') {
             setCountDelay(3)
+            setOpenQuotationOptions(true)
+            if (value == '') {
+                setOpenQuotationOptions(false)
+            }
+
         }
     }
 
@@ -260,6 +266,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         })
 
         setQuotationOptions(bookArray)
+        setOpenQuotationOptions(false)
     }
 
     const patchFeed = async () => {
@@ -297,9 +304,28 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
                     disablePortal
                     options={quotationOptions}
                     onChange={handleQuotationSelectChange}
-
+                    renderOption={(props, option: any) => (
+                        <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                          <img
+                            loading="lazy"
+                            width="20"
+                            src={option.coverImage}
+                            alt=""
+                          />
+                          {option.label}
+                        </Box>
+                    )}
                     sx={{ width: '100%' }}
-                    renderInput={(params) => <TextField {...params} onChange={handleChange} value={quotationOrigin} name="quotationOrigin" placeholder="예) 도서명, 사람 이름" variant="filled" label="인용구 출처" />}
+                    renderInput={(params) => <TextField {...params} onChange={handleChange} value={quotationOrigin} name="quotationOrigin" placeholder="예) 도서명, 사람 이름" variant="filled" label="인용구 출처" InputProps={{
+                        ...params.InputProps,
+
+                        endAdornment: (
+                          <React.Fragment>
+                            {openQuotationOptions ? <CircularProgress color="inherit" size={16} sx={{ position: "relative", top: '-8px' }} /> : null}
+                            {params.InputProps.endAdornment}
+                          </React.Fragment>
+                        ),
+                    }} />}
                 />
 
 
@@ -495,14 +521,14 @@ function FeedProfile({ feed }) {
         <Box sx={{ flexGrow: 1, overflow: 'hidden', marginBottom: "1rem", alignContent: 'center' }}>
             <Grid container wrap="nowrap" spacing={2} sx={{ alignContent: 'center', alignItems: 'center' }}>
                 <Grid item>
-                    <Link to={'/user/' + feed.owner.userId}>
+                    <Link to={'/@' + feed.owner.userId}>
                         <Avatar sx={{ width: '2rem', height: '2rem', fontSize: '1rem' }}>{feed.owner.userDisplayName.slice(0, 1)}</Avatar>
 
                     </Link>
                 </Grid>
 
                 <Grid item xs zeroMinWidth sx={{ alignContent: 'center'}}>
-                <Link to={'/user/' + feed.owner.userId}>
+                <Link to={'/@' + feed.owner.userId}>
                 <Typography sx={{ fontSize: '1rem' }} noWrap>{feed.owner.userDisplayName}</Typography>
 
                 </Link>
