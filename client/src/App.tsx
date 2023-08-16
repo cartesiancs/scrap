@@ -37,6 +37,14 @@ const App = () => {
         },
     });
 
+    const applyBackgroundColor = () => {
+        document.body.style.background = isDarkmode ? "#121212" : "rgba(255,255,255,1)"
+    }
+
+    useEffect(() => {
+        applyBackgroundColor()
+    }, [])
+
 
     return (
         <div>

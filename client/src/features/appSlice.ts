@@ -18,7 +18,10 @@ const initialDarkmode = (): boolean => {
     return false
 }
 
-
+const applyBackgroundColor = () => {
+    const isDarkmode = initialDarkmode()
+    document.body.style.background = isDarkmode ? "#121212" : "rgba(255,255,255,1)"
+}
 
 const initialState: state = {
     isDarkmode: initialDarkmode(),
@@ -32,6 +35,7 @@ const appSlice = createSlice({
             const ls = new LocalStorage()
             ls.set('darkmode', action.payload.isDarkmode)
             state.isDarkmode = action.payload.isDarkmode
+            applyBackgroundColor()
         }
     }
 })

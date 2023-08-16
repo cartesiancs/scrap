@@ -227,7 +227,7 @@ const OcrAPI = {
     async requestOCR({ formData }) {
 
         const application = await AppAPI.getServerVersion()
-        const ocrUrl = application.server.mode == 'development' ? 'http://localhost:9040/recognize' : 'https://ocr.scrap.devent.kr/recognize'
+        const ocrUrl = application.server.mode == 'development' ? 'http://localhost:8000/recognize' : 'https://ocr.scrap.devent.kr/recognize'
         console.log(ocrUrl)
 
         let response = await axios.request({
