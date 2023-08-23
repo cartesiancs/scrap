@@ -72,6 +72,29 @@ const feedModel = {
         }
     },
 
+    getBook: async function ({ title }) {
+        try {
+
+
+
+            const feedRepository = AppDataSource.getRepository(Feed);
+            const getFeed = await feedRepository.createQueryBuilder('feed')
+            .orderBy("feed.date", "DESC")
+            .leftJoin("feed.owner", "user")
+            .leftJoin("feed.quotation", "quotation")
+            .addSelect(['user.userId', 'user.userAuthLevel', 'user.userDisplayName'])
+            .addSelect(['quotation.title', 'quotation.description', 'quotation.author', 'quotation.publishYear', 'quotation.coverImage', 'quotation.url', 'quotation.type'])
+            .where("quotation.title = :title", { title: title })
+            .getMany()
+
+    
+            return { status: 1, result: getFeed }
+
+        } catch (err) {
+            throw Error(err)
+        }
+    },
+
     insert: async function ({ thought, quotationText, quotationUUID, owner, date, type }) {
         try {
             const feedRepository = AppDataSource.getRepository(Feed);

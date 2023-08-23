@@ -114,6 +114,24 @@ const FeedAPI = {
         })
     
         return response.data
+    },
+    
+    
+    async searchBook({ bookTitle }) {
+        let token = Cookies.get("user")
+        
+        let response = await axios.request({
+            method: 'get',
+            url: `/api/feeds/search/book/${decodeURI(bookTitle)}`,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "x-access-token": token
+    
+            },
+            responseType: 'json'
+        })
+    
+        return response.data
     }
 }
 

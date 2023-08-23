@@ -136,7 +136,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
             publishYear: '',
             coverImage: '',
             url: '',
-            type: 0
+            type: 1
         }
     })
 
@@ -205,7 +205,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
                 publishYear: inputs.quotation.publishYear,
                 coverImage: inputs.quotation.coverImage,
                 url: inputs.quotation.url,
-                type: 1
+                type: inputs.quotation.type
             }
         })
         
@@ -219,7 +219,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
                 publishYear: '',
                 coverImage: '',
                 url: '',
-                type: 0
+                type: 1
             }
         })
 
@@ -261,7 +261,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
                 description: book.description,
                 publishYear: book.publishYear.substr(0, 4),
                 url: book.url,
-                type: 1
+                type: 2
             }
         })
 

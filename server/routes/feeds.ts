@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { feedController, feedUserController } from '../controllers/feed.ctrl.js';
+import { feedController, feedUserController, feedBookController } from '../controllers/feed.ctrl.js';
 import { tokenMiddleware } from '../middlewares/token.js';
 import errorHandleController from '../middlewares/errorHandler.js'
 
@@ -12,6 +12,7 @@ router.post('/', tokenMiddleware.check, errorHandleController(feedController.ins
 router.delete('/:idx', tokenMiddleware.check, errorHandleController(feedController.delete));
 router.put('/:idx', tokenMiddleware.check, errorHandleController(feedController.update));
 router.get('/search/:sentence', errorHandleController(feedController.search));
+router.get('/search/book/:bookTitle', errorHandleController(feedBookController.get));
 
 router.get('/user/:userId', errorHandleController(feedUserController.get));
 

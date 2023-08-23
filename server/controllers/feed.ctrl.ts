@@ -162,4 +162,18 @@ const feedUserController = {
     },
 }
 
-export { feedController, feedUserController }
+const feedBookController = {
+    get: async function  (req, res) {
+        const bookTitle = String(req.params.bookTitle)
+        console.log(bookTitle)
+        const resultFeed = await feedModel.getBook({ title: bookTitle })
+    
+        if (Array.isArray(resultFeed) && resultFeed.length === 0) {
+            res.status(404).json({data:'', msg:'Not Found'})
+        } else {
+            res.status(200).json({data: resultFeed})
+        }
+    },
+}
+
+export { feedController, feedUserController, feedBookController }
