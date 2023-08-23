@@ -89,7 +89,7 @@ function Feed() {
             <Grid container sx={{ marginTop: "1rem" }} justifyContent="center" spacing={3}>
                 <Grid item xs={12} md={6}>
 
-                    <FeedSearch></FeedSearch>
+                    <FeedSearchInput></FeedSearchInput>
 
                     {feeds.map(feed => (
                         <FeedBody feed={feed}></FeedBody>
@@ -105,7 +105,7 @@ function Feed() {
         <Grid container sx={{ marginTop: "1rem" }} justifyContent="center" spacing={3}>
             <Grid item xs={12} md={6}>
 
-                <FeedSearch></FeedSearch>
+                <FeedSearchInput></FeedSearchInput>
 
 
                 {feeds.map(feed => (
@@ -656,6 +656,10 @@ type FeedActionButtonType = {
     onClick?: any
 }
 
+type FeedSearchInputType = {
+    value?: string
+}
+
 function FeedActionButton({ children, onClick }: FeedActionButtonType) {
     return (
         <IconButton aria-label="delete" onClick={onClick}>
@@ -664,8 +668,8 @@ function FeedActionButton({ children, onClick }: FeedActionButtonType) {
     )
 }
 
-function FeedSearch() {
-    const [searchValue, setSearchValue] = useState('')
+function FeedSearchInput({ value = '' }: FeedSearchInputType) {
+    const [searchValue, setSearchValue] = useState(value)
 
     const handleSubmit = () => {
         location.href = '/search/'+searchValue
@@ -690,7 +694,7 @@ function FeedSearch() {
             onSubmit={handleSubmit}
             onChange={handleOnchange}
             onKeyDown={handleOnKeyDown}
-            value={searchValue}
+            value={decodeURI(searchValue)}
             InputProps={{endAdornment: <SearchIcon />}}
         />
 
@@ -710,4 +714,4 @@ function FeedSkeleton() {
 }
   
 export default Feed;
-export { FeedBody, FeedInput }
+export { FeedBody, FeedInput, FeedSearchInput }
