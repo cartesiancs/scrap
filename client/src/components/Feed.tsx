@@ -6,6 +6,7 @@ import { push, unshift, remove, clear } from '../features/feedSlice';
 import { Link } from "react-router-dom"
 import { FeedAPI, BookAPI } from "../api";
 
+
 import SendIcon from '@mui/icons-material/Send';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ShareIcon from '@mui/icons-material/Share';
@@ -708,6 +709,7 @@ function FeedSkeleton() {
                 <Box sx={{ fontSize: 14, whiteSpace: 'pre-line', wordWrap: 'break-word' }} color="text.secondary">
                     <Skeleton variant="text" sx={{ fontSize: '2rem' }} />
                 </Box>
+
             </CardContent>
         </Card>
     )
