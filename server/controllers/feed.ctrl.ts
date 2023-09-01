@@ -76,17 +76,6 @@ const feedController = {
             return res.status(401).json({status:0})
         }
 
-        let data: any = await feedModel.insert({ 
-            thought: thought, 
-            quotationText: quotationText, 
-            quotationUUID: quotationUUID, 
-            owner: owner, 
-            date: date, 
-            type: type 
-        })
-
-        console.log("sfswef", data)
-
 
         await quotationModel.create({
             uuid: quotationUUID,
@@ -97,6 +86,16 @@ const feedController = {
             coverImage: quotationCoverImage,
             url: quotationUrl,
             type: quotationType
+        })
+
+
+        let data: any = await feedModel.insert({ 
+            thought: thought, 
+            quotationText: quotationText, 
+            quotationUUID: quotationUUID, 
+            owner: owner, 
+            date: date, 
+            type: type 
         })
 
     

@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { push, unshift, remove, clear } from '../features/feedSlice';
 import { Link } from "react-router-dom"
 import { FeedAPI, BookAPI } from "../api";
+import { LocalStorageJSON } from "../utils/localStorage"
 
 
 import SendIcon from '@mui/icons-material/Send';
@@ -133,7 +134,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         quotationOrigin: '',
         quotation: {
             description: '1',
-            author: 'vfd',
+            author: '',
             publishYear: '',
             coverImage: '',
             url: '',
@@ -226,6 +227,17 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
             }
         })
 
+        const savedBookValue = {
+            label: quotationOrigin,
+            author: inputs.quotation.author,
+            coverImage: inputs.quotation.coverImage,
+            description: inputs.quotation.description,
+            publishYear: inputs.quotation.publishYear,
+            url: inputs.quotation.url,
+            type: inputs.quotation.type
+        }
+
+        saveBookStorage(savedBookValue)
 
         setAlertSuccessTrigger(alertSuccessTrigger + 1)
     }
@@ -245,6 +257,55 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
             }
 
         });
+    }
+
+    const saveBookStorage = async (savedBookValue) => {
+        
+        const store = new LocalStorageJSON()
+        const isExist = await store.exist("savedBooks")
+
+        if (isExist == true) {
+            const isExistValue = store.existValue("savedBooks", savedBookValue)
+            if (!isExistValue) {
+                let values = await store.get("savedBooks")
+                values.push(savedBookValue)
+                await store.set("savedBooks", values)
+            }
+        } else {
+            const setValue = await store.set("savedBooks", [savedBookValue])
+        }
+
+    }
+
+    const getSavedBookStorege = async () => {
+        const store = new LocalStorageJSON()
+        const isExist = await store.exist("savedBooks")
+
+        if (isExist == false) {
+            return []
+        }
+
+        const getValue = await store.get("savedBooks")
+        return getValue
+    }
+
+    const loadSavedBooks = async () => {
+        const savedBooks = await getSavedBookStorege()
+        const bookArray = savedBooks.map(book => {
+            return {
+                label: book.label,
+                author: book.author,
+                coverImage: book.coverImage,
+                description: book.description,
+                publishYear: book.publishYear,
+                url: book.url,
+                type: 2
+            }
+        })
+
+        console.log(bookArray)
+
+        setQuotationOptions(bookArray)
     }
 
     const patchBooks = async () => {
@@ -278,6 +339,10 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
             ['quotationText']: insertQuotationText
         });
     }, [defaultQuotationText])
+
+    useEffect(() => {
+        loadSavedBooks()
+    }, [])
 
     return (
         <Box>

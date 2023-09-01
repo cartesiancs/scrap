@@ -97,23 +97,18 @@ const feedModel = {
 
     insert: async function ({ thought, quotationText, quotationUUID, owner, date, type }) {
         try {
+            const feedValues = new Feed()
+            feedValues.thought = thought
+            feedValues.quotationText = quotationText
+            feedValues.quotation = quotationUUID
+            feedValues.owner = owner
+            feedValues.date = date
+            feedValues.type = type
+
             const feedRepository = AppDataSource.getRepository(Feed);
-            const insertFeed = await feedRepository.createQueryBuilder()
-                .insert()
-                .into(Feed)
-                .values([
-                    { 
-                        thought: thought, 
-                        quotationText: quotationText,
-                        quotation: quotationUUID,
-                        owner: owner, 
-                        date: date, 
-                        type: type 
-                    }
-                ])
-                .execute()
-    
+            await feedRepository.save(feedValues)
             return { status: 1 }
+
 
         } catch (err) {
             throw Error(err)
