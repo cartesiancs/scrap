@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { TextField, Button, Stack, Grid, Card, CardContent, Typography, Box, Skeleton, IconButton, Avatar, Menu, MenuItem, InputAdornment, List, ListSubheader, Autocomplete, CircularProgress } from '@mui/material';
 import { Popup, AlertDialog } from './Alert'
 import { useDispatch, useSelector } from 'react-redux';
@@ -143,6 +143,8 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
 
     const { thought, quotationText, quotationOrigin } = inputs
 
+    const quotationOriginRef: any = useRef()
+
     const [alertTrigger, setAlertTrigger] = useState(0)
     const [alertSuccessTrigger, setAlertSuccessTrigger] = useState(0)
 
@@ -224,11 +226,8 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
             }
         })
 
-        setAlertSuccessTrigger(alertSuccessTrigger + 1)
 
-        // setTimeout(() => {
-        //     patchFeed()
-        // }, 500)
+        setAlertSuccessTrigger(alertSuccessTrigger + 1)
     }
 
     const handleQuotationSelectChange = (e, values) => {
@@ -270,23 +269,6 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         setOpenQuotationOptions(false)
     }
 
-    const patchFeed = async () => {
-        const getFeeds = await FeedAPI.getFeed(0, {
-            isrange: 'true',
-            range: 1,
-            order: "DESC"
-        })
-
-        dispatch(unshift({
-            idx: getFeeds.data.result[0].idx, 
-            thought: getFeeds.data.result[0].thought, 
-            quotationText: getFeeds.data.result[0].quotationText, 
-            quotationOrigin: getFeeds.data.result[0].quotationOrigin, 
-            owner: getFeeds.data.result[0].owner, 
-            date: getFeeds.data.result[0].date, 
-            type: getFeeds.data.result[0].type 
-        }))
-    }
     
     useEffect(() => {
         const insertQuotationText: string = defaultQuotationText || ''
@@ -294,7 +276,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         setInputs({
             ...inputs,
             ['quotationText']: insertQuotationText
-          });
+        });
     }, [defaultQuotationText])
 
     return (
@@ -305,6 +287,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
                     disablePortal
                     options={quotationOptions}
                     onChange={handleQuotationSelectChange}
+                    value={inputs.quotationOrigin}
                     renderOption={(props, option: any) => (
                         <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
                           <img
@@ -317,7 +300,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
                         </Box>
                     )}
                     sx={{ width: '100%' }}
-                    renderInput={(params) => <TextField {...params} onChange={handleChange} value={quotationOrigin} name="quotationOrigin" placeholder="예) 도서명, 사람 이름" variant="filled" label="인용구 출처" InputProps={{
+                    renderInput={(params) => <TextField {...params} onChange={handleChange} inputRef={quotationOriginRef} value={inputs.quotationOrigin} name="quotationOrigin" placeholder="예) 도서명, 사람 이름" variant="filled" label="인용구 출처" InputProps={{
                         ...params.InputProps,
 
                         endAdornment: (

@@ -56,8 +56,6 @@ const feedController = {
     
         let getUserId = await userService.transformTokentoUserid({ token: token });
 
-        console.log(req.body.quotation)
-
         let thought = sanitizeHtml(req.body.thought);
         let quotationText = sanitizeHtml(req.body.quotationText);
         let quotationTitle = sanitizeHtml(req.body.quotationTitle);
@@ -78,6 +76,18 @@ const feedController = {
             return res.status(401).json({status:0})
         }
 
+        let data: any = await feedModel.insert({ 
+            thought: thought, 
+            quotationText: quotationText, 
+            quotationUUID: quotationUUID, 
+            owner: owner, 
+            date: date, 
+            type: type 
+        })
+
+        console.log("sfswef", data)
+
+
         await quotationModel.create({
             uuid: quotationUUID,
             title: quotationTitle,
@@ -89,7 +99,6 @@ const feedController = {
             type: quotationType
         })
 
-        let data: any = await feedModel.insert({ thought: thought, quotationText: quotationText, quotationUUID: quotationUUID, owner: owner, date: date, type: type })
     
         if (data.status == 1) {
             res.status(200).json({status:1})
