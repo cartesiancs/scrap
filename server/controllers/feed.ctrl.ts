@@ -146,7 +146,6 @@ const feedController = {
         let sentence = sanitizeHtml(req.params.sentence);
         
         let data: any = await feedModel.search({ sentence })
-        console.log(data)
     
         if (data.status == 1) {
             res.status(200).json({status:1, data: data.result })
@@ -173,7 +172,6 @@ const feedUserController = {
 const feedBookController = {
     get: async function  (req, res) {
         const bookTitle = String(req.params.bookTitle)
-        console.log(bookTitle)
         const resultFeed = await feedModel.getBook({ title: bookTitle })
     
         if (Array.isArray(resultFeed) && resultFeed.length === 0) {

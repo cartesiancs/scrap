@@ -13,6 +13,8 @@ import { Link } from "react-router-dom";
 function FeedSearch() {
     const [content, setContent] = useState([{idx: 0, thought:'', quotationText:'', quotationOrigin:'', owner: { userId: 'none', userDisplayName: 'none'}, date: '', type: 1}])
     const [searchValue, setSearchValue] = useState(location.pathname.split('/')[2])
+    const [searchOption, setSearchOption] = useState('feed')
+    const [searchOptionIndex, setSearchOptionIndex] = useState(0)
 
 
 
@@ -23,29 +25,63 @@ function FeedSearch() {
         setContent(getFeedData.data)
     }
 
-    const searchBook = async () => {
+    const fetchBook = async () => {
         const getFeed = await FeedAPI.searchBook({ bookTitle: searchValue })
         console.log(getFeed)
         setContent(getFeed.data.result)
 
     }
 
+    const getSearchParams = async () => {
+        const urlParams = new URLSearchParams(window.location.search)
+        const getParams = urlParams.get('o')
+
+        return getParams == null ? "feed" : getParams
+    }
+
+    const setSearchParams = async (item) => {
+        const urlParams = new URLSearchParams(window.location.search)
+        urlParams.set("o", item)
+        let newRelativePathQuery = window.location.pathname + '?' + urlParams.toString()
+        history.pushState(null, '', newRelativePathQuery);
+
+    }
+
+
     const handleClickBook = () => {
-        searchBook()
+        fetchBook()
     }
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         if (newValue == 1) {
-            searchBook()
+            fetchBook()
+            setSearchParams('book')
+            setSearchOptionIndex(1)
         }
 
         if (newValue == 0) {
             fetchFeed()
+            setSearchParams('feed')
+            setSearchOptionIndex(0)
         }
     };
 
+    const switchSearchOption = async () => {
+        const option: any = await getSearchParams()
+        if (option == 'feed') {
+            fetchFeed()
+            setSearchOptionIndex(0)
+
+        }
+
+        if (option == 'book') {
+            fetchBook()
+            setSearchOptionIndex(1)
+        }
+    }
+
     useEffect(() => {
-        fetchFeed()
+        switchSearchOption()
     }, [])
 
 
@@ -59,7 +95,7 @@ function FeedSearch() {
 
                 <FeedSearchInput value={searchValue}></FeedSearchInput>
 
-                <FeedSearchTab onChange={handleTabChange}></FeedSearchTab>
+                <FeedSearchTab tabValue={searchOptionIndex} onChange={handleTabChange}></FeedSearchTab>
 
 
                 {content.map(feed => (
