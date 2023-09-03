@@ -259,13 +259,33 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         });
     }
 
+    const isExistBookStorage = async (label) => {
+        const store = new LocalStorageJSON()
+        const isExistStorage = await store.exist("savedBooks")
+
+        if (isExistStorage != true) {
+            return false
+        } 
+
+        let values = await store.get("savedBooks")
+        let isExist = false
+
+        for (let index = 0; index < values.length; index++) {
+            if (values[index].label == label) {
+                isExist = true
+            }
+        }
+
+        return isExist
+    }
+
     const saveBookStorage = async (savedBookValue) => {
         
         const store = new LocalStorageJSON()
         const isExist = await store.exist("savedBooks")
 
         if (isExist == true) {
-            const isExistValue = store.existValue("savedBooks", savedBookValue)
+            const isExistValue = await isExistBookStorage(savedBookValue.label)
             if (!isExistValue) {
                 let values = await store.get("savedBooks")
                 values.push(savedBookValue)

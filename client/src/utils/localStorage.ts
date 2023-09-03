@@ -50,11 +50,6 @@ class LocalStorageJSON {
         return this.get(key).length == 0 ? false : true
     }
 
-    existValue(key, value) {
-        const arrayJson = this.get(key)
-        const searchValue = JSON.stringify(value)
-        return arrayJson.indexOf(searchValue) !== -1 ? true : false
-    }
 }
 
 export { LocalStorage, LocalStorageJSON }
