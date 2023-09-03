@@ -56,8 +56,6 @@ const feedController = {
     
         let getUserId = await userService.transformTokentoUserid({ token: token });
 
-        console.log(req.body.quotation)
-
         let thought = sanitizeHtml(req.body.thought);
         let quotationText = sanitizeHtml(req.body.quotationText);
         let quotationTitle = sanitizeHtml(req.body.quotationTitle);
@@ -78,6 +76,7 @@ const feedController = {
             return res.status(401).json({status:0})
         }
 
+
         await quotationModel.create({
             uuid: quotationUUID,
             title: quotationTitle,
@@ -89,7 +88,16 @@ const feedController = {
             type: quotationType
         })
 
-        let data: any = await feedModel.insert({ thought: thought, quotationText: quotationText, quotationUUID: quotationUUID, owner: owner, date: date, type: type })
+
+        let data: any = await feedModel.insert({ 
+            thought: thought, 
+            quotationText: quotationText, 
+            quotationUUID: quotationUUID, 
+            owner: owner, 
+            date: date, 
+            type: type 
+        })
+
     
         if (data.status == 1) {
             res.status(200).json({status:1})
@@ -138,7 +146,6 @@ const feedController = {
         let sentence = sanitizeHtml(req.params.sentence);
         
         let data: any = await feedModel.search({ sentence })
-        console.log(data)
     
         if (data.status == 1) {
             res.status(200).json({status:1, data: data.result })
@@ -162,4 +169,17 @@ const feedUserController = {
     },
 }
 
-export { feedController, feedUserController }
+const feedBookController = {
+    get: async function  (req, res) {
+        const bookTitle = String(req.params.bookTitle)
+        const resultFeed = await feedModel.getBook({ title: bookTitle })
+    
+        if (Array.isArray(resultFeed) && resultFeed.length === 0) {
+            res.status(404).json({data:'', msg:'Not Found'})
+        } else {
+            res.status(200).json({data: resultFeed})
+        }
+    },
+}
+
+export { feedController, feedUserController, feedBookController }

@@ -114,6 +114,24 @@ const FeedAPI = {
         })
     
         return response.data
+    },
+    
+    
+    async searchBook({ bookTitle }) {
+        let token = Cookies.get("user")
+        
+        let response = await axios.request({
+            method: 'get',
+            url: `/api/feeds/search/book/${decodeURI(bookTitle)}`,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "x-access-token": token
+    
+            },
+            responseType: 'json'
+        })
+    
+        return response.data
     }
 }
 
@@ -227,7 +245,7 @@ const OcrAPI = {
     async requestOCR({ formData }) {
 
         const application = await AppAPI.getServerVersion()
-        const ocrUrl = application.server.mode == 'development' ? 'http://localhost:9040/recognize' : 'https://ocr.scrap.devent.kr/recognize'
+        const ocrUrl = application.server.mode == 'development' ? 'http://localhost:8000/recognize' : 'https://ocr.scrap.devent.kr/recognize'
         console.log(ocrUrl)
 
         let response = await axios.request({

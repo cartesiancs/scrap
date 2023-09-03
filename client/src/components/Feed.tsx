@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { TextField, Button, Stack, Grid, Card, CardContent, Typography, Box, Skeleton, IconButton, Avatar, Menu, MenuItem, InputAdornment, List, ListSubheader, Autocomplete, CircularProgress } from '@mui/material';
 import { Popup, AlertDialog } from './Alert'
 import { useDispatch, useSelector } from 'react-redux';
 import { push, unshift, remove, clear } from '../features/feedSlice';
 import { Link } from "react-router-dom"
 import { FeedAPI, BookAPI } from "../api";
+import { LocalStorageJSON } from "../utils/localStorage"
+
 
 import SendIcon from '@mui/icons-material/Send';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -89,7 +91,7 @@ function Feed() {
             <Grid container sx={{ marginTop: "1rem" }} justifyContent="center" spacing={3}>
                 <Grid item xs={12} md={6}>
 
-                    <FeedSearch></FeedSearch>
+                    <FeedSearchInput></FeedSearchInput>
 
                     {feeds.map(feed => (
                         <FeedBody feed={feed}></FeedBody>
@@ -105,7 +107,7 @@ function Feed() {
         <Grid container sx={{ marginTop: "1rem" }} justifyContent="center" spacing={3}>
             <Grid item xs={12} md={6}>
 
-                <FeedSearch></FeedSearch>
+                <FeedSearchInput></FeedSearchInput>
 
 
                 {feeds.map(feed => (
@@ -132,15 +134,17 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         quotationOrigin: '',
         quotation: {
             description: '1',
-            author: 'vfd',
+            author: '',
             publishYear: '',
             coverImage: '',
             url: '',
-            type: 0
+            type: 1
         }
     })
 
     const { thought, quotationText, quotationOrigin } = inputs
+
+    const quotationOriginRef: any = useRef()
 
     const [alertTrigger, setAlertTrigger] = useState(0)
     const [alertSuccessTrigger, setAlertSuccessTrigger] = useState(0)
@@ -205,7 +209,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
                 publishYear: inputs.quotation.publishYear,
                 coverImage: inputs.quotation.coverImage,
                 url: inputs.quotation.url,
-                type: 1
+                type: inputs.quotation.type
             }
         })
         
@@ -219,15 +223,23 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
                 publishYear: '',
                 coverImage: '',
                 url: '',
-                type: 0
+                type: 1
             }
         })
 
-        setAlertSuccessTrigger(alertSuccessTrigger + 1)
+        const savedBookValue = {
+            label: quotationOrigin,
+            author: inputs.quotation.author,
+            coverImage: inputs.quotation.coverImage,
+            description: inputs.quotation.description,
+            publishYear: inputs.quotation.publishYear,
+            url: inputs.quotation.url,
+            type: inputs.quotation.type
+        }
 
-        // setTimeout(() => {
-        //     patchFeed()
-        // }, 500)
+        saveBookStorage(savedBookValue)
+
+        setAlertSuccessTrigger(alertSuccessTrigger + 1)
     }
 
     const handleQuotationSelectChange = (e, values) => {
@@ -247,6 +259,75 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         });
     }
 
+    const isExistBookStorage = async (label) => {
+        const store = new LocalStorageJSON()
+        const isExistStorage = await store.exist("savedBooks")
+
+        if (isExistStorage != true) {
+            return false
+        } 
+
+        let values = await store.get("savedBooks")
+        let isExist = false
+
+        for (let index = 0; index < values.length; index++) {
+            if (values[index].label == label) {
+                isExist = true
+            }
+        }
+
+        return isExist
+    }
+
+    const saveBookStorage = async (savedBookValue) => {
+        
+        const store = new LocalStorageJSON()
+        const isExist = await store.exist("savedBooks")
+
+        if (isExist == true) {
+            const isExistValue = await isExistBookStorage(savedBookValue.label)
+            if (!isExistValue) {
+                let values = await store.get("savedBooks")
+                values.push(savedBookValue)
+                await store.set("savedBooks", values)
+            }
+        } else {
+            const setValue = await store.set("savedBooks", [savedBookValue])
+        }
+
+    }
+
+    const getSavedBookStorege = async () => {
+        const store = new LocalStorageJSON()
+        const isExist = await store.exist("savedBooks")
+
+        if (isExist == false) {
+            return []
+        }
+
+        const getValue = await store.get("savedBooks")
+        return getValue
+    }
+
+    const loadSavedBooks = async () => {
+        const savedBooks = await getSavedBookStorege()
+        const bookArray = savedBooks.map(book => {
+            return {
+                label: book.label,
+                author: book.author,
+                coverImage: book.coverImage,
+                description: book.description,
+                publishYear: book.publishYear,
+                url: book.url,
+                type: 2
+            }
+        })
+
+        console.log(bookArray)
+
+        setQuotationOptions(bookArray)
+    }
+
     const patchBooks = async () => {
 
         const response = await BookAPI.get({
@@ -261,7 +342,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
                 description: book.description,
                 publishYear: book.publishYear.substr(0, 4),
                 url: book.url,
-                type: 1
+                type: 2
             }
         })
 
@@ -269,23 +350,6 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         setOpenQuotationOptions(false)
     }
 
-    const patchFeed = async () => {
-        const getFeeds = await FeedAPI.getFeed(0, {
-            isrange: 'true',
-            range: 1,
-            order: "DESC"
-        })
-
-        dispatch(unshift({
-            idx: getFeeds.data.result[0].idx, 
-            thought: getFeeds.data.result[0].thought, 
-            quotationText: getFeeds.data.result[0].quotationText, 
-            quotationOrigin: getFeeds.data.result[0].quotationOrigin, 
-            owner: getFeeds.data.result[0].owner, 
-            date: getFeeds.data.result[0].date, 
-            type: getFeeds.data.result[0].type 
-        }))
-    }
     
     useEffect(() => {
         const insertQuotationText: string = defaultQuotationText || ''
@@ -293,8 +357,12 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
         setInputs({
             ...inputs,
             ['quotationText']: insertQuotationText
-          });
+        });
     }, [defaultQuotationText])
+
+    useEffect(() => {
+        loadSavedBooks()
+    }, [])
 
     return (
         <Box>
@@ -304,6 +372,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
                     disablePortal
                     options={quotationOptions}
                     onChange={handleQuotationSelectChange}
+                    value={inputs.quotationOrigin}
                     renderOption={(props, option: any) => (
                         <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
                           <img
@@ -316,7 +385,7 @@ function FeedInput({ defaultQuotationText }: FeedInputPropsType) {
                         </Box>
                     )}
                     sx={{ width: '100%' }}
-                    renderInput={(params) => <TextField {...params} onChange={handleChange} value={quotationOrigin} name="quotationOrigin" placeholder="예) 도서명, 사람 이름" variant="filled" label="인용구 출처" InputProps={{
+                    renderInput={(params) => <TextField {...params} onChange={handleChange} inputRef={quotationOriginRef} value={inputs.quotationOrigin} name="quotationOrigin" placeholder="예) 도서명, 사람 이름" variant="filled" label="인용구 출처" InputProps={{
                         ...params.InputProps,
 
                         endAdornment: (
@@ -516,6 +585,31 @@ function FeedQuotation({ quotation }: any) {
 function FeedProfile({ feed }) {
     const dateSplit = feed.date.split('.')
 
+    const getElapsedTime = () => {
+        const feedTime = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2], dateSplit[3], dateSplit[4], dateSplit[5]).getTime()
+        const nowTime = new Date().getTime()
+
+        const calcTime = {
+            "년 전": 1000 * 60 * 60 * 24 * 365,
+            "달 전": 1000 * 60 * 60 * 24 * 30,
+            "일 전": 1000 * 60 * 60 * 24,
+            "시간 전": 1000 * 60 * 60,
+            "분 전": 1000 * 60
+        }
+
+        for (const key in calcTime) {
+            if (Object.prototype.hasOwnProperty.call(calcTime, key)) {
+                const element = calcTime[key];
+
+                const diffTime = Math.floor((nowTime - feedTime) / calcTime[key])
+                if (diffTime > 0) {
+                    return `${diffTime}${key}`
+                }
+            }
+        }
+        return "방금 전"
+    }
+
 
     return (
         <Box sx={{ flexGrow: 1, overflow: 'hidden', marginBottom: "1rem", alignContent: 'center' }}>
@@ -532,7 +626,7 @@ function FeedProfile({ feed }) {
                 <Typography sx={{ fontSize: '1rem' }} noWrap>{feed.owner.userDisplayName}</Typography>
 
                 </Link>
-                    <Typography sx={{ fontSize: '0.7rem' }} color="text.secondary" noWrap>{new Date(dateSplit[0], dateSplit[1], dateSplit[2], dateSplit[3], dateSplit[4], dateSplit[5]).toDateString()}</Typography>
+                    <Typography sx={{ fontSize: '0.7rem' }} color="text.secondary" noWrap>{getElapsedTime()}</Typography>
 
                 </Grid>
                 <Grid item xs zeroMinWidth sx={{ justifyContent: 'flex-end',  }}>
@@ -656,6 +750,10 @@ type FeedActionButtonType = {
     onClick?: any
 }
 
+type FeedSearchInputType = {
+    value?: string
+}
+
 function FeedActionButton({ children, onClick }: FeedActionButtonType) {
     return (
         <IconButton aria-label="delete" onClick={onClick}>
@@ -664,8 +762,8 @@ function FeedActionButton({ children, onClick }: FeedActionButtonType) {
     )
 }
 
-function FeedSearch() {
-    const [searchValue, setSearchValue] = useState('')
+function FeedSearchInput({ value = '' }: FeedSearchInputType) {
+    const [searchValue, setSearchValue] = useState(value)
 
     const handleSubmit = () => {
         location.href = '/search/'+searchValue
@@ -690,7 +788,7 @@ function FeedSearch() {
             onSubmit={handleSubmit}
             onChange={handleOnchange}
             onKeyDown={handleOnKeyDown}
-            value={searchValue}
+            value={decodeURI(searchValue)}
             InputProps={{endAdornment: <SearchIcon />}}
         />
 
@@ -704,10 +802,11 @@ function FeedSkeleton() {
                 <Box sx={{ fontSize: 14, whiteSpace: 'pre-line', wordWrap: 'break-word' }} color="text.secondary">
                     <Skeleton variant="text" sx={{ fontSize: '2rem' }} />
                 </Box>
+
             </CardContent>
         </Card>
     )
 }
   
 export default Feed;
-export { FeedBody, FeedInput }
+export { FeedBody, FeedInput, FeedSearchInput }

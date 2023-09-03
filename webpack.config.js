@@ -28,5 +28,8 @@ export default
         "filename": "index.js",
         "path": path.resolve(__dirname, 'client/dist'),
         "library": "main"
-    }
+    },
+    "optimization": {
+        "usedExports": true,
+    },
 }

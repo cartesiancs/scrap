@@ -72,25 +72,43 @@ const feedModel = {
         }
     },
 
+    getBook: async function ({ title }) {
+        try {
+
+
+
+            const feedRepository = AppDataSource.getRepository(Feed);
+            const getFeed = await feedRepository.createQueryBuilder('feed')
+            .orderBy("feed.date", "DESC")
+            .leftJoin("feed.owner", "user")
+            .leftJoin("feed.quotation", "quotation")
+            .addSelect(['user.userId', 'user.userAuthLevel', 'user.userDisplayName'])
+            .addSelect(['quotation.title', 'quotation.description', 'quotation.author', 'quotation.publishYear', 'quotation.coverImage', 'quotation.url', 'quotation.type'])
+            .where("quotation.title = :title", { title: title })
+            .getMany()
+
+    
+            return { status: 1, result: getFeed }
+
+        } catch (err) {
+            throw Error(err)
+        }
+    },
+
     insert: async function ({ thought, quotationText, quotationUUID, owner, date, type }) {
         try {
+            const feedValues = new Feed()
+            feedValues.thought = thought
+            feedValues.quotationText = quotationText
+            feedValues.quotation = quotationUUID
+            feedValues.owner = owner
+            feedValues.date = date
+            feedValues.type = type
+
             const feedRepository = AppDataSource.getRepository(Feed);
-            const insertFeed = await feedRepository.createQueryBuilder()
-                .insert()
-                .into(Feed)
-                .values([
-                    { 
-                        thought: thought, 
-                        quotationText: quotationText,
-                        quotation: quotationUUID,
-                        owner: owner, 
-                        date: date, 
-                        type: type 
-                    }
-                ])
-                .execute()
-    
+            await feedRepository.save(feedValues)
             return { status: 1 }
+
 
         } catch (err) {
             throw Error(err)
@@ -132,12 +150,19 @@ const feedModel = {
 
     search: async function ({ sentence }) {
         try {
-            const feedRepository = AppDataSource.getRepository(Feed);
-            const searchFeed = await feedRepository.findBy({
-                quotationText: Like(`%${sentence}%`)
-            });
 
-            return { status: 1, result: searchFeed }
+                        
+            const feedRepository = AppDataSource.getRepository(Feed);
+            const getFeed = await feedRepository.createQueryBuilder('feed')
+            .leftJoin("feed.owner", "user")
+            .leftJoin("feed.quotation", "quotation")
+            .addSelect(['user.userId', 'user.userAuthLevel', 'user.userDisplayName'])
+            .addSelect(['quotation.title', 'quotation.description', 'quotation.author', 'quotation.publishYear', 'quotation.coverImage', 'quotation.url', 'quotation.type'])
+            .where("feed.quotationText like :title", { title: `%${sentence}%` })
+
+            .getMany()
+    
+            return { status: 1, result: getFeed }
 
         } catch (err) {
             throw Error(err)

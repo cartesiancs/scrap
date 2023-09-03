@@ -22,4 +22,34 @@ class LocalStorage {
     }
 }
 
-export { LocalStorage }
+
+// array 
+class LocalStorageJSON {
+    constructor() {
+
+    }
+
+    set(key, json) {
+        localStorage.setItem(key, JSON.stringify(json));
+    }
+
+    get(key) {
+        const getItem = localStorage.getItem(key)
+        if (getItem == null) {
+            return []
+        }
+        return JSON.parse(getItem);
+    }
+
+
+    remove(key) {
+        localStorage.removeItem(key);
+    }
+
+    exist(key) {
+        return this.get(key).length == 0 ? false : true
+    }
+
+}
+
+export { LocalStorage, LocalStorageJSON }
