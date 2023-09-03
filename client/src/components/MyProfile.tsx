@@ -55,11 +55,11 @@ function Profile() {
 
                         <hr />
 
-                        <b>다크모드: <ToggleDarkmode></ToggleDarkmode></b>
+                        <ToggleDarkmode></ToggleDarkmode>
 
                         <br />
 
-                        <Button onClick={handleClickLogout}>로그아웃</Button>
+                        <Button sx={{ marginTop: '0.5rem' }} onClick={handleClickLogout}>로그아웃</Button>
 
                     </Box>
 

@@ -21,9 +21,9 @@ function ToggleDarkmode() {
     }
   
     return (
-      <IconButton sx={{ ml: 1}} onClick={toggleColorMode} color="primary">
-        {isDarkmode === true ? <Brightness7Icon sx={{ fontSize: "1.2rem"  }} /> : <Brightness4Icon sx={{ fontSize: "1.2rem"  }} />}
-      </IconButton>
+      <Button onClick={toggleColorMode} color="primary">
+        <b style={{ marginRight: '0.5rem' }}>다크모드</b> {isDarkmode === true ? <Brightness7Icon sx={{ fontSize: "1.2rem"  }} /> : <Brightness4Icon sx={{ fontSize: "1.2rem"  }} />}
+      </Button>
     )
   }
 

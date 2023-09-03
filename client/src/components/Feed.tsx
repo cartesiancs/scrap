@@ -585,6 +585,31 @@ function FeedQuotation({ quotation }: any) {
 function FeedProfile({ feed }) {
     const dateSplit = feed.date.split('.')
 
+    const getElapsedTime = () => {
+        const feedTime = new Date(dateSplit[0], dateSplit[1] - 1, dateSplit[2], dateSplit[3], dateSplit[4], dateSplit[5]).getTime()
+        const nowTime = new Date().getTime()
+
+        const calcTime = {
+            "년 전": 1000 * 60 * 60 * 24 * 365,
+            "달 전": 1000 * 60 * 60 * 24 * 30,
+            "일 전": 1000 * 60 * 60 * 24,
+            "시간 전": 1000 * 60 * 60,
+            "분 전": 1000 * 60
+        }
+
+        for (const key in calcTime) {
+            if (Object.prototype.hasOwnProperty.call(calcTime, key)) {
+                const element = calcTime[key];
+
+                const diffTime = Math.floor((nowTime - feedTime) / calcTime[key])
+                if (diffTime > 0) {
+                    return `${diffTime}${key}`
+                }
+            }
+        }
+        return "방금 전"
+    }
+
 
     return (
         <Box sx={{ flexGrow: 1, overflow: 'hidden', marginBottom: "1rem", alignContent: 'center' }}>
@@ -601,7 +626,7 @@ function FeedProfile({ feed }) {
                 <Typography sx={{ fontSize: '1rem' }} noWrap>{feed.owner.userDisplayName}</Typography>
 
                 </Link>
-                    <Typography sx={{ fontSize: '0.7rem' }} color="text.secondary" noWrap>{new Date(dateSplit[0], dateSplit[1], dateSplit[2], dateSplit[3], dateSplit[4], dateSplit[5]).toDateString()}</Typography>
+                    <Typography sx={{ fontSize: '0.7rem' }} color="text.secondary" noWrap>{getElapsedTime()}</Typography>
 
                 </Grid>
                 <Grid item xs zeroMinWidth sx={{ justifyContent: 'flex-end',  }}>
